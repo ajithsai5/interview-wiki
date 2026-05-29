@@ -170,6 +170,37 @@ def resolve_related(notes):
         n["related"] = related
 
 
+def serve(app_dir, port=8765):
+    """Serve the viewer over the local network so a phone on the same Wi-Fi
+    can open it. Ctrl+C to stop."""
+    import http.server
+    import socket
+    import functools
+
+    # best-effort LAN IP (the address your phone connects to)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        sock.connect(("8.8.8.8", 80))
+        ip = sock.getsockname()[0]
+    except Exception:
+        ip = "127.0.0.1"
+    finally:
+        sock.close()
+
+    print("\n  Wiki is being served over your network (press Ctrl+C to stop):")
+    print("    On this PC:     http://localhost:%d/" % port)
+    print("    On your phone:  http://%s:%d/   <- type this in your phone browser" % (ip, port))
+    print("\n  Both devices must be on the SAME Wi-Fi. If the phone can't connect,")
+    print("  click 'Allow access' if Windows Firewall prompts on first run.\n")
+
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=app_dir)
+    httpd = http.server.HTTPServer(("0.0.0.0", port), handler)
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\n  Stopped serving.")
+
+
 def main():
     notes = collect_notes()
     notes.sort(key=lambda n: (n["domain"].lower(), n["title"].lower()))
@@ -208,6 +239,9 @@ def main():
 
     if "--open" in sys.argv:
         webbrowser.open("file:///" + os.path.join(APP_DIR, "index.html").replace(os.sep, "/"))
+
+    if "--serve" in sys.argv:
+        serve(APP_DIR)
 
 
 if __name__ == "__main__":

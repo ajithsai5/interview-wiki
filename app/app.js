@@ -9,13 +9,13 @@
   //      Domains are derived from the notes themselves, so adding a new
   //      folder/phase just works. Unknown domains get a book icon + sort last.
   const DOMAIN_META = {
+    "DSA & Coding":     { order: 0, icon: icoCode },
+    "Coding / DSA":     { order: 0, icon: icoCode },
     "ML Fundamentals":  { order: 1, icon: icoFlask },
     "Deep Learning":    { order: 2, icon: icoLayers },
     "LLMs / GenAI":     { order: 3, icon: icoSpark },
     "System Design":    { order: 4, icon: icoGrid },
     "ML System Design": { order: 4, icon: icoGrid },
-    "DSA & Coding":     { order: 5, icon: icoCode },
-    "Coding / DSA":     { order: 5, icon: icoCode },
     "MLOps & Infra":    { order: 6, icon: icoServer },
     "Math Foundations": { order: 7, icon: icoSigma },
     "Behavioral":       { order: 8, icon: icoChat },

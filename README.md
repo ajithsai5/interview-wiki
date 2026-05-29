@@ -30,6 +30,21 @@ you add or edit notes** so the app shows your latest pages. Progress (statuses,
 review history) is stored locally in your browser; your notes stay the source of
 truth as plain `.md` files. Open `app/index.html` directly anytime to read.
 
+## Run it on your phone
+
+The viewer is mobile-responsive (it collapses to a hamburger menu on small
+screens). To open it on your phone:
+
+1. On the PC, double-click **`serve-mobile.bat`** (or run `python build.py --serve`).
+2. It prints a URL like `http://192.168.1.23:8765/`.
+3. Type that URL into your phone's browser. **Both devices must be on the same
+   Wi-Fi.** If Windows Firewall prompts on first run, click *Allow access*.
+4. Press `Ctrl+C` in the window to stop serving.
+
+Progress you mark on the phone is saved in that phone's browser (separate from the
+PC). This works while the PC is on and serving; for an always-available copy you'd
+deploy `app/` to a static host (ask and I'll set that up).
+
 ## Layout
 
 ```
