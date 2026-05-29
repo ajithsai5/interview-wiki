@@ -41,9 +41,10 @@ interview-wiki/
   run.bat              # double-click: build + open the viewer (Windows)
   app/                 # the wiki viewer (index.html, styles.css, app.js, notes-data.js)
   raw/                 # immutable source material (notes, articles, transcripts)
-  dsa/                 # Phase 2 & 4 — patterns + solved-problem logs
-    patterns/
-    problems/
+  dsa/                 # Phase 2 & 4 — coding/DSA topic tracks
+    arrays/            #   Arrays roadmap (00 hub + 13 sections)
+    hashing/           #   Hashing roadmap (00 hub + 6 sections)
+    problems/          #   solved-problem logs
   ml-fundamentals/     # Phase 5 — bias-variance, attention, RAG, LoRA, etc.
   system-design/       # Phase 6 — ML system design framework + whiteboard designs
   behavioral/          # Phase 7 — STAR/STARR stories, Amazon LPs

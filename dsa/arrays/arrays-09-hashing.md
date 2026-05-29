@@ -116,5 +116,5 @@ def subarray_sum(arr, k):
   (rare in interviews, but say it if asked).
 
 ## Related
-- Your note [[arrays-and-hashing]] · seeded [[hashing]] · combo with [[arrays-05-prefix-sum]]
+- Dedicated track: [[hashing-00-roadmap]] · seeded [[hashing]] · combo with [[arrays-05-prefix-sum]]
 - Next: [[arrays-10-matrix]]

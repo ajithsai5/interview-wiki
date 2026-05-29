@@ -21,8 +21,14 @@ every ingest. `status`: learning · solid · needs-review.
 - [[arrays-12-advanced]] — monotonic stack, heap, difference array  ·  learning
 - [[arrays-13-dp]] — 1D DP, state transitions  ·  learning
 
-### Patterns
-- [[arrays-and-hashing]] — frequency maps, set lookups, prefix sums  ·  learning
+### Hashing roadmap (start here → [[hashing-00-roadmap]])
+- [[hashing-00-roadmap]] — the path + the "clue → technique" decoder table  ·  learning
+- [[hashing-01-fundamentals]] — key→value, HashMap vs HashSet, O(1), collisions  ·  learning
+- [[hashing-02-frequency-map]] — count → majority, top-K, group anagrams  ·  learning
+- [[hashing-03-set-lookup]] — presence → duplicates, intersection, longest consecutive  ·  learning
+- [[hashing-04-complement-map]] — Two Sum, first unique character  ·  learning
+- [[hashing-05-prefix-hashmap]] — subarray sum = k, equal 0/1 subarrays  ·  learning
+- [[hashing-06-strings-window]] — anagrams, longest substring, minimum window  ·  learning
 
 ### Solved problems
 _(none yet — log each NeetCode problem here as `dsa/problems/<slug>.md`)_

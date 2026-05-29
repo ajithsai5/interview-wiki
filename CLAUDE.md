@@ -37,7 +37,7 @@ intuition beat completeness.
   ---
   ```
 
-- Link related pages with Obsidian-style wikilinks: `[[arrays-and-hashing]]`.
+- Link related pages with Obsidian-style wikilinks: `[[arrays-03-two-pointers]]`.
   Link liberally — a link to a page that doesn't exist yet is a *to-do marker*,
   not an error.
 - Keep a **"60-second answer"** section near the top of conceptual pages — the
@@ -46,7 +46,7 @@ intuition beat completeness.
 
 ## Page templates
 
-### DSA pattern page (`dsa/patterns/*.md`)
+### DSA pattern page (`dsa/<topic>/*.md`, e.g. `dsa/arrays/`, `dsa/hashing/`)
 ```
 ## When to reach for it    (trigger signals in a problem statement)
 ## The idea                (one-paragraph intuition)
@@ -92,7 +92,7 @@ intuition beat completeness.
 2. Discuss key takeaways briefly to confirm understanding.
 3. Create or update the relevant page(s). A single topic may touch several pages
    (e.g. learning "sliding window" updates the pattern page, links from
-   `[[arrays-and-hashing]]`, and adds problem logs).
+   `[[arrays-03-two-pointers]]`, and adds problem logs).
 4. Update `index.md` (add/adjust the page's line).
 5. Append one entry to `log.md`.
 6. Bump `updated:` in frontmatter of every page you changed.
