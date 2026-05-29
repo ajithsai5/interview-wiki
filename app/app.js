@@ -52,6 +52,23 @@
     return seen.map((name) => ({ name: name, icon: domainIcon(name) }));
   }
 
+  // ---- Sub-groups (sub-folders within a domain) ----
+  // Notes carry a `group` (their sub-folder, e.g. "Arrays"). Notes with no
+  // sub-folder fall into this bucket; a domain that has ONLY this bucket renders
+  // flat (no sub-headers), so single-folder domains stay clean.
+  const GROUP_FALLBACK = "Core Concepts";
+  function groupOf(n) { return (n.group && n.group.trim()) ? n.group : GROUP_FALLBACK; }
+  function orderedGroups(items) {
+    const names = [];
+    items.forEach((n) => { const g = groupOf(n); if (names.indexOf(g) === -1) names.push(g); });
+    names.sort((a, b) => {
+      if (a === GROUP_FALLBACK) return 1;     // keep the catch-all last
+      if (b === GROUP_FALLBACK) return -1;
+      return a.localeCompare(b);
+    });
+    return names;
+  }
+
   const LS = {
     progress: "ipw:progress",
     last: "ipw:last",
@@ -148,7 +165,41 @@
       wrap.appendChild(head);
 
       const list = el("div", "domain-items");
-      items.forEach((n) => list.appendChild(noteLink(n)));
+      const groups = orderedGroups(items);
+      const flat = groups.length === 1 && groups[0] === GROUP_FALLBACK;
+
+      if (flat) {
+        // domain has no sub-folders -> render notes directly (original behavior)
+        items.forEach((n) => list.appendChild(noteLink(n)));
+      } else {
+        groups.forEach((g) => {
+          const gitems = items.filter((n) => groupOf(n) === g);
+          if (!gitems.length) return;
+
+          const sg = el("div", "subgroup");
+          const sgKey = dom.name + "▸" + g;
+          if (!q && collapsed[sgKey]) sg.classList.add("collapsed");
+
+          const sgHead = el("div", "subgroup-head");
+          sgHead.innerHTML = `<span class="chev">${icoChevron()}</span><span class="sg-title">${esc(g)}</span>`;
+          const sgProg = el("span", "sg-prog");
+          const sgMastered = gitems.filter((n) => statusOf(n.id) === "mastered").length;
+          sgProg.textContent = `${sgMastered}/${gitems.length}`;
+          sgHead.appendChild(sgProg);
+          sgHead.addEventListener("click", () => {
+            collapsed[sgKey] = !collapsed[sgKey];
+            save(LS.collapsed, collapsed);
+            sg.classList.toggle("collapsed");
+          });
+          sg.appendChild(sgHead);
+
+          const sgItems = el("div", "subgroup-items");
+          gitems.forEach((n) => sgItems.appendChild(noteLink(n)));
+          sg.appendChild(sgItems);
+          list.appendChild(sg);
+        });
+      }
+
       wrap.appendChild(list);
       nav.appendChild(wrap);
     });

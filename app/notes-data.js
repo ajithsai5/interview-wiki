@@ -6,6 +6,7 @@
     "id": "arrays-00-roadmap",
     "title": "Arrays 00 · Interview Roadmap",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -35,6 +36,7 @@
     "id": "arrays-01-basics",
     "title": "Arrays 01 · Basics & Complexity",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -53,6 +55,7 @@
     "id": "arrays-02-traversal",
     "title": "Arrays 02 · Traversal Patterns",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -71,6 +74,7 @@
     "id": "arrays-03-two-pointers",
     "title": "Arrays 03 · Two Pointers",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -88,6 +92,7 @@
     "id": "arrays-04-sliding-window",
     "title": "Arrays 04 · Sliding Window",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -106,6 +111,7 @@
     "id": "arrays-05-prefix-sum",
     "title": "Arrays 05 · Prefix Sum",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -124,6 +130,7 @@
     "id": "arrays-06-kadane",
     "title": "Arrays 06 · Kadane's Algorithm",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -143,6 +150,7 @@
     "id": "arrays-07-sorting",
     "title": "Arrays 07 · Sorting + Arrays",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -162,6 +170,7 @@
     "id": "arrays-08-binary-search",
     "title": "Arrays 08 · Binary Search",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -179,6 +188,7 @@
     "id": "arrays-09-hashing",
     "title": "Arrays 09 · Hashing with Arrays",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -197,6 +207,7 @@
     "id": "arrays-10-matrix",
     "title": "Arrays 10 · Matrix (2D Arrays)",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -215,6 +226,7 @@
     "id": "arrays-11-greedy",
     "title": "Arrays 11 · Greedy + Arrays",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -233,6 +245,7 @@
     "id": "arrays-12-advanced",
     "title": "Arrays 12 · Advanced Patterns",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -253,6 +266,7 @@
     "id": "arrays-13-dp",
     "title": "Arrays 13 · Dynamic Programming on Arrays",
     "domain": "Coding / DSA",
+    "group": "Arrays",
     "tags": [
       "dsa",
       "arrays",
@@ -271,6 +285,7 @@
     "id": "hashing-00-roadmap",
     "title": "Hashing 00 · Interview Roadmap",
     "domain": "Coding / DSA",
+    "group": "Hashing",
     "tags": [
       "dsa",
       "hashing",
@@ -294,6 +309,7 @@
     "id": "hashing-01-fundamentals",
     "title": "Hashing 01 · Fundamentals",
     "domain": "Coding / DSA",
+    "group": "Hashing",
     "tags": [
       "dsa",
       "hashing",
@@ -311,6 +327,7 @@
     "id": "hashing-02-frequency-map",
     "title": "Hashing 02 · Frequency Map",
     "domain": "Coding / DSA",
+    "group": "Hashing",
     "tags": [
       "dsa",
       "hashing",
@@ -329,6 +346,7 @@
     "id": "hashing-03-set-lookup",
     "title": "Hashing 03 · Set Lookup",
     "domain": "Coding / DSA",
+    "group": "Hashing",
     "tags": [
       "dsa",
       "hashing",
@@ -348,6 +366,7 @@
     "id": "hashing-04-complement-map",
     "title": "Hashing 04 · Complement / Index Map",
     "domain": "Coding / DSA",
+    "group": "Hashing",
     "tags": [
       "dsa",
       "hashing",
@@ -366,6 +385,7 @@
     "id": "hashing-05-prefix-hashmap",
     "title": "Hashing 05 · Prefix Sum + HashMap",
     "domain": "Coding / DSA",
+    "group": "Hashing",
     "tags": [
       "dsa",
       "hashing",
@@ -385,6 +405,7 @@
     "id": "hashing-06-strings-window",
     "title": "Hashing 06 · Hashing + Strings & Window",
     "domain": "Coding / DSA",
+    "group": "Hashing",
     "tags": [
       "dsa",
       "hashing",
@@ -405,6 +426,7 @@
     "id": "bias-variance",
     "title": "Bias-Variance Tradeoff",
     "domain": "ML Fundamentals",
+    "group": "",
     "tags": [
       "ml",
       "fundamentals"

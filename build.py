@@ -125,6 +125,8 @@ def collect_notes():
             continue  # skip files at repo root (README, CLAUDE, index, log, ...)
         top = parts[0]
         domain = DOMAIN_BY_FOLDER.get(top, title_from_slug(top))
+        # sub-folder under the domain -> a collapsible group in the sidebar
+        group = title_from_slug(parts[1]) if len(parts) > 1 else ""
         for fn in filenames:
             if not fn.lower().endswith(".md"):
                 continue
@@ -139,6 +141,7 @@ def collect_notes():
                 "id": slug,
                 "title": fm.get("title") or title_from_slug(slug),
                 "domain": fm.get("domain") or domain,
+                "group": fm.get("group") or group,
                 "tags": fm.get("tags") if isinstance(fm.get("tags"), list) else (
                     [fm["tags"]] if fm.get("tags") else []),
                 "status": STATUS_MAP.get(str(fm.get("status", "new")).lower(), "new"),
