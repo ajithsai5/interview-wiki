@@ -391,7 +391,10 @@
       a.href = "#/note/" + n.id;
       let dueLabel, dueCls = "";
       if (st === "new") { dueLabel = "not started"; dueCls = "due"; }
-      else {
+      else if (!reviewedAt(n.id)) {
+        // status seeded from frontmatter but never reviewed in-app yet
+        dueLabel = "ready"; dueCls = "due";
+      } else {
         const d = Math.round((Date.now() - dueAt(n.id)) / DAY);
         if (d >= 0) { dueLabel = d === 0 ? "due today" : `${d}d overdue`; dueCls = "due"; }
         else dueLabel = `in ${-d}d`;
