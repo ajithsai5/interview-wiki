@@ -12,6 +12,24 @@ current, not re-derived every time I ask a question.
 - **The LLM** does the bookkeeping: summarizing, cross-referencing, filing, indexing.
 - **Obsidian** is the reader (open this folder as a vault); the LLM is the writer.
 
+## Run the wiki viewer
+
+A self-contained reader app turns these markdown notes into a browsable,
+searchable wiki with per-note status tracking (New → Learning → Reviewing →
+Mastered) and a spaced-review queue — built for the "learn and relearn" loop.
+
+**To open it:** double-click **`run.bat`** (Windows), or from the repo root run:
+
+```
+python build.py --open
+```
+
+`build.py` scans the note folders, reads each note's frontmatter + body, and
+regenerates `app/notes-data.js` — the data the viewer reads. **Re-run it whenever
+you add or edit notes** so the app shows your latest pages. Progress (statuses,
+review history) is stored locally in your browser; your notes stay the source of
+truth as plain `.md` files. Open `app/index.html` directly anytime to read.
+
 ## Layout
 
 ```
@@ -19,6 +37,9 @@ interview-wiki/
   CLAUDE.md            # the schema: how the LLM maintains this wiki (read this first)
   index.md             # catalog of every page, by category
   log.md               # append-only timeline of ingests / queries / lint passes
+  build.py             # scans .md notes -> generates app/notes-data.js
+  run.bat              # double-click: build + open the viewer (Windows)
+  app/                 # the wiki viewer (index.html, styles.css, app.js, notes-data.js)
   raw/                 # immutable source material (notes, articles, transcripts)
   dsa/                 # Phase 2 & 4 — patterns + solved-problem logs
     patterns/

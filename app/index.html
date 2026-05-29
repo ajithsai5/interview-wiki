@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Prep Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ===================== Sidebar ===================== -->
+  <aside id="sidebar">
+    <div class="brand">
+      <a href="#/home">
+        <div class="mark">
+          <span class="glyph">W</span>
+          <div>
+            <h1>Interview Prep Wiki</h1>
+            <div class="sub">Compounding knowledge base</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="search-wrap">
+      <span class="ico">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </span>
+      <input id="search" type="text" placeholder="Search pages, tags…" autocomplete="off" spellcheck="false" />
+      <kbd>/</kbd>
+    </div>
+
+    <nav id="nav" class="nav-scroll scroll"></nav>
+
+    <div class="sidebar-foot">
+      <button id="reset-btn" title="Reset learning progress">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        Reset progress
+      </button>
+    </div>
+  </aside>
+  <div class="scrim"></div>
+
+  <!-- ===================== Main ===================== -->
+  <main id="main" class="scroll">
+    <div class="topbar">
+      <button id="menu-btn" class="icon-btn menu-btn" title="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div id="crumbs" class="crumbs"></div>
+      <div class="spacer"></div>
+      <button id="theme-btn" class="icon-btn" title="Toggle theme"></button>
+    </div>
+    <div id="content" class="content"></div>
+  </main>
+
+  <div id="toast"></div>
+
+  <!-- markdown renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+
+  <!-- notes data — regenerated from your .md files by build.py -->
+  <script src="notes-data.js"></script>
+
+  <!-- app -->
+  <script src="app.js"></script>
+</body>
+</html>

@@ -96,6 +96,10 @@ intuition beat completeness.
 4. Update `index.md` (add/adjust the page's line).
 5. Append one entry to `log.md`.
 6. Bump `updated:` in frontmatter of every page you changed.
+7. **Regenerate the viewer data**: run `python build.py` so `app/notes-data.js`
+   reflects the new/edited pages. The reader app (`app/`) renders this data; it
+   does not read the `.md` files at runtime. Status mapping into the app:
+   `learning → learning`, `needs-review → reviewing`, `solid → mastered`.
 
 ### Query (owner asks a question)
 1. Read `index.md` to find relevant pages, then drill in.
