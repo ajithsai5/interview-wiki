@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each signed-in user can read/write only their own progress.
+    // Notes themselves are NOT in Firestore — only your status/review data.
+    match /users/{uid}/progress/{noteId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

@@ -76,7 +76,6 @@
     collapsed: "ipw:collapsed",
   };
 
-  let progress = load(LS.progress, {});      // { id: { status, reviewed } }
   let collapsed = load(LS.collapsed, {});     // { domain: true }
   let searchTerm = "";
 
@@ -85,10 +84,14 @@
 
   // status precedence: your saved progress > the note's frontmatter status > "new"
   function statusOf(id) {
-    if (progress[id] && progress[id].status) return progress[id].status;
+    var p = window.IPWStore && window.IPWStore.get(id);
+    if (p && p.status) return p.status;
     return (byId[id] && byId[id].status) || "new";
   }
-  function reviewedAt(id) { return (progress[id] && progress[id].reviewed) || 0; }
+  function reviewedAt(id) {
+    var p = window.IPWStore && window.IPWStore.get(id);
+    return (p && p.reviewed) || 0;
+  }
   function dueAt(id) {
     const st = statusOf(id);
     if (st === "new") return 0;
@@ -268,6 +271,18 @@
     document.body.classList.remove("nav-open");
   }
 
+  // Re-render the current view in place (no scroll reset). Called when progress
+  // changes — from your own click or from a synced change on another device.
+  function refresh() {
+    const r = currentRoute();
+    if (r.name === "note" && byId[r.arg]) renderNote(byId[r.arg]);
+    else if (r.name === "review") renderReview();
+    else if (r.name === "domain") renderList("domain", r.arg);
+    else if (r.name === "all") renderList("all");
+    else renderHome();
+    buildSidebar();
+  }
+
   // ============================================================
   // Note view
   // ============================================================
@@ -315,13 +330,13 @@
 
     setContent(reader);
 
-    // status picker handlers
+    // status picker handlers — setStatus triggers the store's change event,
+    // which re-renders the sidebar + this view (see refresh()), so the picker
+    // and dots update for both local clicks and remote (synced) changes.
     reader.querySelectorAll(".status-picker button").forEach((b) => {
       b.addEventListener("click", () => {
         setStatus(n.id, b.dataset.st);
-        reader.querySelectorAll(".status-picker button").forEach((x) => x.classList.toggle("sel", x.dataset.st === b.dataset.st));
         toast(statusToast(b.dataset.st));
-        buildSidebar();
       });
     });
   }
@@ -336,8 +351,7 @@
   }
 
   function setStatus(id, st) {
-    progress[id] = { status: st, reviewed: Date.now() };
-    save(LS.progress, progress);
+    window.IPWStore.setStatus(id, st);
   }
 
   // ============================================================
@@ -570,12 +584,46 @@
 
     document.getElementById("reset-btn").addEventListener("click", () => {
       if (confirm("Reset all your learning progress (statuses + review history)? Notes are not deleted.")) {
-        progress = {}; save(LS.progress, progress); buildSidebar(); router(); toast("Progress reset");
+        window.IPWStore.clearAll();
+        toast("Progress reset");
       }
     });
 
+    // re-render whenever progress changes (own click OR a synced change)
+    if (window.IPWStore) window.IPWStore.subscribe(refresh);
+    setupAuthUI();
+    registerServiceWorker();
+
     window.addEventListener("hashchange", router);
     router();
+  }
+
+  // ---- cross-device sync sign-in button (only shown if Firebase is configured) ----
+  function setupAuthUI() {
+    const foot = document.querySelector(".sidebar-foot");
+    if (!foot || !window.IPWStore || !window.IPWStore.auth.available()) return; // local-only mode
+    const btn = el("button", "auth-btn");
+    btn.type = "button";
+    foot.appendChild(btn);
+    function paint(u) {
+      const who = u ? (u.displayName || u.email || "Signed in") : "Sign in to sync";
+      btn.innerHTML = `<span class="ico">${icoCloud()}</span><span class="auth-label">${esc(who)}</span>`;
+      btn.title = u ? "Synced across your devices — click to sign out" : "Sign in to sync progress across devices";
+      btn.classList.toggle("on", !!u);
+    }
+    paint(window.IPWStore.auth.current());
+    window.IPWStore.auth.onChange(paint);
+    btn.addEventListener("click", () => {
+      const u = window.IPWStore.auth.current();
+      const p = u ? window.IPWStore.auth.signOut() : window.IPWStore.auth.signIn();
+      if (p && p.catch) p.catch((e) => toast("Sign-in error: " + ((e && e.code) || e)));
+    });
+  }
+
+  function registerServiceWorker() {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    }
   }
 
   // ============================================================
@@ -595,6 +643,7 @@
   function icoChat() { return svg('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/>'); }
   function icoBriefcase() { return svg('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/>'); }
   function icoBook() { return svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>'); }
+  function icoCloud() { return svg('<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.3 9.5 4 4 0 0 0 7 17.5"/><path d="M8 17h9.5"/>', 13); }
   function icoMoon() { return svg('<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>'); }
   function icoSun() { return svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>'); }
 

@@ -211,7 +211,7 @@ a { color: inherit; }
 
 .sidebar-foot {
   border-top: 1px solid var(--hair); padding: 10px 14px;
-  display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-faint);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--text-faint);
 }
 .sidebar-foot button {
   background: none; border: 1px solid var(--hair-strong); color: var(--text-soft);
@@ -220,6 +220,10 @@ a { color: inherit; }
   transition: background .12s, border-color .12s;
 }
 .sidebar-foot button:hover { background: var(--bg-sunk); border-color: var(--accent); color: var(--text); }
+.auth-btn .ico { display: inline-flex; color: var(--text-faint); }
+.auth-btn .auth-label { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.auth-btn.on { border-color: var(--st-mastered); color: var(--text); }
+.auth-btn.on .ico { color: var(--st-mastered); }
 
 /* ============================================================
    Main column

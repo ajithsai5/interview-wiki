@@ -41,9 +41,16 @@ screens). To open it on your phone:
    Wi-Fi.** If Windows Firewall prompts on first run, click *Allow access*.
 4. Press `Ctrl+C` in the window to stop serving.
 
-Progress you mark on the phone is saved in that phone's browser (separate from the
-PC). This works while the PC is on and serving; for an always-available copy you'd
-deploy `app/` to a static host (ask and I'll set that up).
+This LAN method works while the PC is on and serving, and progress stays in each
+browser separately.
+
+### Install it as an app + sync across devices
+
+For an **installable, offline app** on your phone whose **status/progress syncs
+between phone and laptop**, see **[MOBILE-SETUP.md](MOBILE-SETUP.md)**. It uses a
+free Firebase project (Firestore) for sync + a free static host for the install.
+Until you configure it, the app runs in local-only mode (progress per-browser) —
+the PWA install + offline reading already work without any of that.
 
 ## Layout
 
