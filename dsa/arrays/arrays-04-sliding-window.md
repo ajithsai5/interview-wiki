@@ -2,7 +2,7 @@
 title: Arrays 04 · Sliding Window
 phase: 2
 tags: [dsa, arrays, sliding-window]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

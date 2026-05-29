@@ -2,7 +2,7 @@
 title: Hashing 02 · Frequency Map
 phase: 2
 tags: [dsa, hashing, frequency]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

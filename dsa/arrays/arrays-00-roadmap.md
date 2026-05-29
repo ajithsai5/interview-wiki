@@ -2,7 +2,7 @@
 title: Arrays 00 · Interview Roadmap
 phase: 2
 tags: [dsa, arrays, roadmap, index]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

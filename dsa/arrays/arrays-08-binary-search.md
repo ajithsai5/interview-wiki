@@ -2,7 +2,7 @@
 title: Arrays 08 · Binary Search
 phase: 2
 tags: [dsa, arrays, binary-search]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

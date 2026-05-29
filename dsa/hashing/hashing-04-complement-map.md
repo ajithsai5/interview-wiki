@@ -2,7 +2,7 @@
 title: Hashing 04 · Complement / Index Map
 phase: 2
 tags: [dsa, hashing, two-sum]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

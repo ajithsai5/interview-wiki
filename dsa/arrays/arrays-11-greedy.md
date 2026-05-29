@@ -2,7 +2,7 @@
 title: Arrays 11 · Greedy + Arrays
 phase: 2
 tags: [dsa, arrays, greedy]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

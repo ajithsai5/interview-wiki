@@ -2,7 +2,7 @@
 title: Hashing 06 · Hashing + Strings & Window
 phase: 2
 tags: [dsa, hashing, strings, sliding-window]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

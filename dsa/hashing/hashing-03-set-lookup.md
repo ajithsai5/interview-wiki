@@ -2,7 +2,7 @@
 title: Hashing 03 · Set Lookup
 phase: 2
 tags: [dsa, hashing, set]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

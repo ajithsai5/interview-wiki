@@ -2,7 +2,7 @@
 title: Hashing 01 · Fundamentals
 phase: 2
 tags: [dsa, hashing, basics]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

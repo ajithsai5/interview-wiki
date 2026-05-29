@@ -2,7 +2,7 @@
 title: Arrays 10 · Matrix (2D Arrays)
 phase: 2
 tags: [dsa, arrays, matrix, grid]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

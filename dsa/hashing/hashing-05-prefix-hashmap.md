@@ -2,7 +2,7 @@
 title: Hashing 05 · Prefix Sum + HashMap
 phase: 2
 tags: [dsa, hashing, prefix-sum]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29

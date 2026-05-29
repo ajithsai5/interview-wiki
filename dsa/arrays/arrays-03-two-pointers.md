@@ -2,7 +2,7 @@
 title: Arrays 03 · Two Pointers
 phase: 2
 tags: [dsa, arrays, two-pointers]
-status: learning
+status: new
 anki: false
 created: 2026-05-29
 updated: 2026-05-29
