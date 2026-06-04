@@ -9,3 +9,6 @@ desktop.ini
 
 # Self-hosted sync secrets (DB credentials + sync key) — never commit
 server/config.php
+
+# Build artifact (regenerate with: python tools/make_bundle.py)
+dist/

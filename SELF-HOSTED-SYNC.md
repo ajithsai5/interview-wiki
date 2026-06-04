@@ -17,30 +17,43 @@ infrastructure; no third party.
   from `config.sample.php`; never committed; PHP runs it, so it's never shown as text).
 - **A MySQL table** (`ipw_progress`) — stores only your status/review data.
 
-## Step 1 — Create a MySQL database (cPanel)
-1. cPanel → **MySQL® Databases**.
-2. Create a database (e.g. `inkpio_wiki`), a user, a password, and **add the user
-   to the database with All Privileges**. Note all three values.
+## Step 1 — Database (reuse WordPress's — nothing to create)
+Your WordPress site already has a MySQL database. We reuse it and add one small
+table that **creates itself** on first run — so there's no phpMyAdmin step. In
+Step 3 you'll copy WordPress's DB login (the four `DB_*` values from your site's
+`wp-config.php`) into `config.php`. (`server/schema.sql` is only there if you ever
+want to create the table by hand.)
 
-## Step 2 — Create the table (phpMyAdmin)
-1. cPanel → **phpMyAdmin** → pick your new database → **SQL** tab.
-2. Paste the contents of **`server/schema.sql`** → **Go**.
+## Step 2 — Get file access to your server
+`wp-admin` (posts/pages) can't create folders or upload these files — it's only the
+content editor. Get file access one of two ways:
+
+- **Easiest, from inside WordPress — the "WP File Manager" plugin:**
+  wp-admin → **Plugins → Add New** → search **"File Manager"** → install
+  **WP File Manager** (by *mndpsingh287*) → **Activate**. A new **WP File Manager**
+  item appears in the left menu — it's a file browser for your server.
+- **Or your hosting control panel** (cPanel / hPanel from wherever you bought
+  hosting) → **File Manager**, or an FTP app like FileZilla.
+
+> Tip: if you use the plugin, you can **deactivate/delete it** once uploading is done.
 
 ## Step 3 — Make config.php
 1. Copy `server/config.sample.php` → `server/config.php`.
 2. Fill in `DB_HOST` (usually `localhost`), `DB_NAME`, `DB_USER`, `DB_PASS`, and a
    long random `SYNC_KEY` (your sync passphrase — you'll type it once per device).
 
-## Step 4 — Upload
-Using cPanel **File Manager** (or FTP):
-1. Create folder `public_html/wiki/`.
-2. Upload **everything inside `app/`** into `public_html/wiki/`
-   (tip: zip the `app` folder, upload the zip, then "Extract" — then move the files
-   so they sit directly in `/wiki/`, not `/wiki/app/`).
-3. Upload **`server/sync.php`** and your filled **`server/config.php`** into the
-   same `public_html/wiki/` folder.
-4. If WordPress's routing hijacks `/wiki/`, drop a file `public_html/wiki/.htaccess`
-   containing one line: `RewriteEngine Off`.
+## Step 4 — Create the /wiki/ folder and upload
+Using the file access from Step 2:
+1. Open your **WordPress root** folder — the one containing `wp-config.php`,
+   `wp-content`, `wp-admin` (in WP File Manager it's the top folder; in cPanel it's
+   usually `public_html`).
+2. **New folder** → name it `wiki`.
+3. Open `wiki` and **upload** the bundle: everything inside `app/`, plus `sync.php`
+   and your filled `config.php`. Easiest: upload the ready-made
+   **`dist/wiki-upload.zip`** and use **Extract** — make sure files land directly in
+   `/wiki/` (not `/wiki/app/`).
+4. If `https://inkpioneers.in/wiki/` shows a WordPress 404 instead of the wiki,
+   create a file `wiki/.htaccess` containing one line: `RewriteEngine Off`.
 
 ## Step 5 — Point the app at your endpoint
 Edit **`app/sync-config.js`** and set:

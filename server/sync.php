@@ -42,6 +42,16 @@ try {
     exit;
 }
 
+// Auto-create the table on first run, so there's no separate phpMyAdmin step.
+try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS ipw_progress (
+        note_id    VARCHAR(190) PRIMARY KEY,
+        status     VARCHAR(20)  NOT NULL,
+        reviewed   BIGINT       NOT NULL DEFAULT 0,
+        updated_at BIGINT       NOT NULL DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+} catch (Exception $e) { /* table likely exists already; ignore */ }
+
 if ($method === 'GET') {
     $rows = $pdo->query(
         "SELECT note_id AS id, status, reviewed, updated_at AS updatedAt FROM ipw_progress"
