@@ -1,11 +1,17 @@
 @echo off
-REM Build the wiki data from your .md notes and open the viewer.
-REM Double-click this file, or run it from a terminal.
+REM ============================================================
+REM  Interview Prep Wiki - one click does everything:
+REM    1) rebuilds the wiki from your .md notes
+REM    2) opens it on this laptop
+REM    3) serves it to your phone (same Wi-Fi)
+REM  A phone URL like  http://192.168.x.x:8765/  is printed below.
+REM  Keep this window open while you use it. Close it (or press Ctrl+C) to stop.
+REM ============================================================
 
 setlocal
 cd /d "%~dp0"
 
-REM --- find a real Python (avoid the Microsoft Store stub) ---
+REM --- find a real Python (skip the Microsoft Store stub) ---
 set "PY="
 if exist "%LOCALAPPDATA%\Programs\Python\Python312\python.exe" set "PY=%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
 if not defined PY (
@@ -22,5 +28,5 @@ if not defined PY (
   exit /b 1
 )
 
-"%PY%" build.py --open
+"%PY%" build.py --serve --open
 endlocal

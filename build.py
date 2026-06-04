@@ -170,9 +170,9 @@ def resolve_related(notes):
         n["related"] = related
 
 
-def serve(app_dir, port=8765):
+def serve(app_dir, port=8765, open_browser=False):
     """Serve the viewer over the local network so a phone on the same Wi-Fi
-    can open it. Ctrl+C to stop."""
+    can open it (and open it on this laptop too). Ctrl+C to stop."""
     import http.server
     import socket
     import functools
@@ -194,7 +194,20 @@ def serve(app_dir, port=8765):
     print("  click 'Allow access' if Windows Firewall prompts on first run.\n")
 
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=app_dir)
-    httpd = http.server.HTTPServer(("0.0.0.0", port), handler)
+    try:
+        httpd = http.server.HTTPServer(("0.0.0.0", port), handler)
+    except OSError as e:
+        print("\n  Could not start on port %d — it looks like a server is already" % port)
+        print("  running (another window open?). Close that window and run this again.")
+        print("  [%s]\n" % e)
+        return
+
+    if open_browser:
+        try:
+            webbrowser.open("http://localhost:%d/" % port)
+        except Exception:
+            pass
+
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
@@ -237,11 +250,10 @@ def main():
     for dom, c in sorted(by_dom.items()):
         print(f"  {c:>3}  {dom}")
 
-    if "--open" in sys.argv:
-        webbrowser.open("file:///" + os.path.join(APP_DIR, "index.html").replace(os.sep, "/"))
-
     if "--serve" in sys.argv:
-        serve(APP_DIR)
+        serve(APP_DIR, open_browser=("--open" in sys.argv))
+    elif "--open" in sys.argv:
+        webbrowser.open("file:///" + os.path.join(APP_DIR, "index.html").replace(os.sep, "/"))
 
 
 if __name__ == "__main__":

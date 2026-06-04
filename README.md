@@ -18,31 +18,29 @@ A self-contained reader app turns these markdown notes into a browsable,
 searchable wiki with per-note status tracking (New → Learning → Reviewing →
 Mastered) and a spaced-review queue — built for the "learn and relearn" loop.
 
-**To open it:** double-click **`run.bat`** (Windows), or from the repo root run:
+**To open it:** double-click **`run.bat`** (Windows). One click rebuilds the wiki
+from your notes, **opens it on this laptop**, and **serves it to your phone** — a
+URL like `http://192.168.x.x:8765/` is printed; open that on your phone (same
+Wi-Fi). Keep the window open while using it; close it (or press `Ctrl+C`) to stop.
 
-```
-python build.py --open
-```
+From a terminal you can also run `python build.py` (just rebuild),
+`python build.py --open` (rebuild + open locally, no server), or
+`python build.py --serve --open` (exactly what `run.bat` does).
 
 `build.py` scans the note folders, reads each note's frontmatter + body, and
 regenerates `app/notes-data.js` — the data the viewer reads. **Re-run it whenever
-you add or edit notes** so the app shows your latest pages. Progress (statuses,
-review history) is stored locally in your browser; your notes stay the source of
-truth as plain `.md` files. Open `app/index.html` directly anytime to read.
+you add or edit notes.** Progress (statuses, review history) is stored locally in
+your browser; your notes stay the source of truth as plain `.md` files.
 
 ## Run it on your phone
 
-The viewer is mobile-responsive (it collapses to a hamburger menu on small
-screens). To open it on your phone:
-
-1. On the PC, double-click **`serve-mobile.bat`** (or run `python build.py --serve`).
-2. It prints a URL like `http://192.168.1.23:8765/`.
-3. Type that URL into your phone's browser. **Both devices must be on the same
-   Wi-Fi.** If Windows Firewall prompts on first run, click *Allow access*.
-4. Press `Ctrl+C` in the window to stop serving.
-
-This LAN method works while the PC is on and serving, and progress stays in each
-browser separately.
+`run.bat` already serves it to your phone. It prints a URL like
+`http://192.168.x.x:8765/` — open that in your phone's browser on the **same
+Wi-Fi**. The viewer is mobile-responsive (it collapses to a hamburger menu). If
+the phone can't connect, allow Python through Windows Firewall when prompted, and
+make sure the laptop isn't on a separate "Guest" network. The IP can change when
+you reconnect Wi-Fi; `run.bat` always prints the current one. Progress marked on
+the phone stays in the phone's browser unless you set up sync below.
 
 ### Install it as an app + sync across devices
 
