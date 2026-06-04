@@ -6,3 +6,6 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Self-hosted sync secrets (DB credentials + sync key) — never commit
+server/config.php

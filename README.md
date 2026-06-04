@@ -45,9 +45,15 @@ the phone stays in the phone's browser unless you set up sync below.
 ### Install it as an app + sync across devices
 
 For an **installable, offline app** on your phone whose **status/progress syncs
-between phone and laptop**, see **[MOBILE-SETUP.md](MOBILE-SETUP.md)**. It uses a
-free Firebase project (Firestore) for sync + a free static host for the install.
-Until you configure it, the app runs in local-only mode (progress per-browser) —
+between phone and laptop**, you have two routes:
+
+- **Your own server (PHP + MySQL)** — nothing leaves your infrastructure. See
+  **[SELF-HOSTED-SYNC.md](SELF-HOSTED-SYNC.md)** (`server/sync.php` + a MySQL table,
+  hosted in e.g. `inkpioneers.in/wiki/`).
+- **Free Firebase** — a managed Google database, least setup. See
+  **[MOBILE-SETUP.md](MOBILE-SETUP.md)**.
+
+Until you configure one, the app runs in local-only mode (progress per-browser) —
 the PWA install + offline reading already work without any of that.
 
 ## Layout
