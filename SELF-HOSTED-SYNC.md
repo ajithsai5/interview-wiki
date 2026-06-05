@@ -56,12 +56,13 @@ Using the file access from Step 2:
    create a file `wiki/.htaccess` containing one line: `RewriteEngine Off`.
 
 ## Step 5 — Point the app at your endpoint
-Edit **`app/sync-config.js`** and set:
-```js
-window.SYNC_CONFIG = { endpoint: "https://inkpioneers.in/wiki/sync.php" };
-```
-Re-upload that one file (or set it before Step 4). *(Tell me your final URL and
-I'll set this for you and rebuild.)*
+The endpoint is **baked into `index.html`** by the bundle (set to
+`https://inkpioneers.in/wiki/sync.php`). If you ever change the URL, edit the inline
+`window.SYNC_CONFIG = { endpoint: "..." }` line near the bottom of `index.html` and
+re-upload it.
+
+> We bake it into `index.html` on purpose: some host security rules **block a file
+> named `sync-config.js`** (returns 403), which would silently disable sync.
 
 ## Step 6 — Use it
 1. On the **laptop**, open `https://inkpioneers.in/wiki/` → click **"Sign in to

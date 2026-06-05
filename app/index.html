@@ -82,7 +82,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
-  <script src="sync-config.js"></script>
+  <!-- self-hosted sync endpoint (inline so no separate file can be blocked by host security).
+       Empty = local-only; build.py/make_bundle sets it for deployment. -->
+  <script>window.SYNC_CONFIG = { endpoint: "" };</script>
   <script src="sync.js?v=2"></script>
 
   <!-- app -->
