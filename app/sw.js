@@ -3,7 +3,7 @@
    - navigations + notes-data.js  -> network-first (fresh when online, cached offline)
    - everything else (css/js/fonts/icons/CDN) -> stale-while-revalidate
    Bump CACHE when you change this file or want to drop old caches. */
-const CACHE = "ipw-cache-v3";
+const CACHE = "ipw-cache-v4";
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();

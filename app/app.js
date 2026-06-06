@@ -598,17 +598,21 @@
     router();
   }
 
-  // ---- cross-device sync sign-in button (only shown if Firebase is configured) ----
+  // ---- cross-device sync button (in the TOP BAR so it's always visible,
+  //      including on mobile where the sidebar footer can sit behind the
+  //      browser's bottom toolbar). Only shown when a sync backend is configured. ----
   function setupAuthUI() {
-    const foot = document.querySelector(".sidebar-foot");
-    if (!foot || !window.IPWStore || !window.IPWStore.auth.available()) return; // local-only mode
+    if (!window.IPWStore || !window.IPWStore.auth.available()) return; // local-only mode
+    const bar = document.querySelector(".topbar");
+    const themeBtn = document.getElementById("theme-btn");
+    if (!bar || !themeBtn) return;
     const btn = el("button", "auth-btn");
     btn.type = "button";
-    foot.appendChild(btn);
+    bar.insertBefore(btn, themeBtn);
     function paint(u) {
-      const who = u ? (u.displayName || u.email || "Signed in") : "Sign in to sync";
-      btn.innerHTML = `<span class="ico">${icoCloud()}</span><span class="auth-label">${esc(who)}</span>`;
-      btn.title = u ? "Synced across your devices — click to sign out" : "Sign in to sync progress across devices";
+      const label = u ? "Synced" : "Sync";
+      btn.innerHTML = `<span class="ico">${icoCloud()}</span><span class="auth-label">${label}</span>`;
+      btn.title = u ? "Synced across your devices — tap to sign out" : "Sign in to sync progress across your devices";
       btn.classList.toggle("on", !!u);
     }
     paint(window.IPWStore.auth.current());
