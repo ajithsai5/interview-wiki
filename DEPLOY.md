@@ -34,6 +34,19 @@ over secure FTP. Your `config.php` on the server is never touched.
 - It rebuilds `notes-data.js`, makes the flat bundle, and uploads all app files to
   `/wiki/`. Open the site and hard-refresh; new notes appear (and sync is untouched).
 
+## Fully automatic — deploy on every `git push` (GitHub Actions)
+The repo includes `.github/workflows/deploy.yml`, which rebuilds and uploads to
+`/wiki/` automatically whenever you push to `main`. It uses three repo **Secrets**
+(Settings → Secrets and variables → Actions): `FTP_HOST`, `FTP_USERNAME`,
+`FTP_PASSWORD`. With those set, you don't run anything — edit a `.md`, commit,
+push, and the site updates in ~1 minute. (`deploy.bat` still works for a manual
+push without committing.)
+
+To rotate the FTP password later: change it in hPanel, then update the secret:
+```
+gh secret set FTP_PASSWORD       # paste the new value when prompted
+```
+
 ## Notes
 - Uses **FTPS** (encrypted) when `"tls": true`. If your host only does plain FTP,
   set `"tls": false` (less secure — password sent in clear).

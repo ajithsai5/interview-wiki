@@ -1,0 +1,46 @@
+name: Deploy to inkpioneers.in/wiki
+
+# Rebuilds the wiki and publishes it to the server on every push to main.
+# FTP credentials come from repo Secrets (Settings -> Secrets and variables ->
+# Actions): FTP_HOST, FTP_USERNAME, FTP_PASSWORD.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dsa/**"
+      - "ml-fundamentals/**"
+      - "system-design/**"
+      - "behavioral/**"
+      - "recruiter-hm/**"
+      - "raw/**"
+      - "app/**"
+      - "server/**"
+      - "build.py"
+      - "tools/make_bundle.py"
+      - "deploy.py"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-wiki
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build from .md notes and upload over FTPS
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_REMOTE_DIR: "domains/inkpioneers.in/public_html/wiki"
+          FTP_PORT: "21"
+          FTP_TLS: "true"
+        run: python deploy.py

@@ -31,14 +31,24 @@ DIST_ZIP = os.path.join(ROOT, "dist", "wiki-upload.zip")
 
 
 def load_config():
-    if not os.path.exists(CONFIG):
-        sys.exit(
-            "Missing deploy-config.json.\n"
-            "Copy deploy-config.sample.json to deploy-config.json and fill in your\n"
-            "FTP host / username / password / remote_dir (see DEPLOY.md)."
-        )
-    with open(CONFIG, encoding="utf-8") as f:
-        return json.load(f)
+    if os.path.exists(CONFIG):
+        with open(CONFIG, encoding="utf-8") as f:
+            return json.load(f)
+    # CI / GitHub Actions: read from environment variables (secrets)
+    if os.environ.get("FTP_HOST"):
+        return {
+            "host": os.environ["FTP_HOST"],
+            "port": int(os.environ.get("FTP_PORT", "21")),
+            "tls": os.environ.get("FTP_TLS", "true").lower() != "false",
+            "user": os.environ["FTP_USER"],
+            "pass": os.environ["FTP_PASS"],
+            "remote_dir": os.environ.get("FTP_REMOTE_DIR", "public_html/wiki"),
+        }
+    sys.exit(
+        "Missing deploy-config.json.\n"
+        "Copy deploy-config.sample.json to deploy-config.json and fill in your\n"
+        "FTP host / username / password / remote_dir (see DEPLOY.md)."
+    )
 
 
 def connect(cfg):
