@@ -15,6 +15,15 @@ Run from the repo root:  python tools/make_bundle.py
 import os
 import zipfile
 
+
+def _readable(name):
+    """ZipInfo for a writestr entry with rw-r--r-- perms, so the web server can
+    read it after extraction (the default would be owner-only -> 403)."""
+    info = zipfile.ZipInfo(name)
+    info.external_attr = 0o644 << 16
+    info.compress_type = zipfile.ZIP_DEFLATED
+    return info
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP = os.path.join(ROOT, "app")
 SERVER = os.path.join(ROOT, "server")
@@ -51,9 +60,9 @@ with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
                 raise SystemExit("ERROR: filename collision when flattening: " + arc)
             seen[arc] = True
             if arc == "index.html":
-                z.writestr("index.html", patched_index)
+                z.writestr(_readable("index.html"), patched_index)
             elif arc == "manifest.webmanifest":
-                z.writestr("manifest.webmanifest", patched_manifest)
+                z.writestr(_readable("manifest.webmanifest"), patched_manifest)
             else:
                 z.write(full, arc)
     z.write(os.path.join(SERVER, "sync.php"), "sync.php")
