@@ -122,6 +122,7 @@ Then mark pages **New → Learning → Reviewing → Mastered** — the review q
 back on a spaced schedule. Add or edit a `.md` file, re-run `build.py`, and it shows up.
 
 **Install on your phone + sync across devices:** see **[SELF-HOSTED-SYNC.md](SELF-HOSTED-SYNC.md)**.
+**Publish updates in one command** (rebuild + upload over FTPS): see **[DEPLOY.md](DEPLOY.md)** — then just run `deploy.bat`.
 
 ---
 

@@ -1,0 +1,8 @@
+{
+  "host": "ftp.inkpioneers.in",
+  "port": 21,
+  "tls": true,
+  "user": "YOUR_FTP_USERNAME",
+  "pass": "YOUR_FTP_PASSWORD",
+  "remote_dir": "public_html/wiki"
+}

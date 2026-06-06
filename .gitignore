@@ -12,3 +12,6 @@ server/config.php
 
 # Build artifact (regenerate with: python tools/make_bundle.py)
 dist/
+
+# Deploy credentials (FTP host/user/password) — never commit
+deploy-config.json
