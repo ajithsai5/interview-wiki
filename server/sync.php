@@ -29,67 +29,68 @@ if (!is_string($key) || !hash_equals(SYNC_KEY, $key)) {
     exit;
 }
 
-// ---- db ----
+// ---- db (everything wrapped so any DB error is reported back; safe because the
+//      request already passed the sync-key auth check above) ----
 try {
     $pdo = new PDO(
         'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4',
         DB_USER, DB_PASS,
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['error' => 'db_connection']);
-    exit;
-}
 
-// Auto-create the table on first run, so there's no separate phpMyAdmin step.
-try {
+    // Auto-create the table on first run, so there's no separate phpMyAdmin step.
     $pdo->exec("CREATE TABLE IF NOT EXISTS ipw_progress (
         note_id    VARCHAR(190) PRIMARY KEY,
         status     VARCHAR(20)  NOT NULL,
         reviewed   BIGINT       NOT NULL DEFAULT 0,
         updated_at BIGINT       NOT NULL DEFAULT 0
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-} catch (Exception $e) { /* table likely exists already; ignore */ }
 
-if ($method === 'GET') {
-    $rows = $pdo->query(
-        "SELECT note_id AS id, status, reviewed, updated_at AS updatedAt FROM ipw_progress"
-    )->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($rows as &$r) { $r['reviewed'] = (int)$r['reviewed']; $r['updatedAt'] = (int)$r['updatedAt']; }
-    echo json_encode(['progress' => $rows]);
-    exit;
-}
-
-if ($method === 'POST') {
-    $body = json_decode(file_get_contents('php://input'), true);
-    if (!is_array($body)) { http_response_code(400); echo json_encode(['error' => 'bad_json']); exit; }
-    $items = isset($body['progress']) && is_array($body['progress'])
-        ? $body['progress']
-        : (isset($body['id']) ? [$body] : []);
-
-    // last-write-wins by updated_at
-    $sql = "INSERT INTO ipw_progress (note_id, status, reviewed, updated_at)
-            VALUES (:id, :status, :reviewed, :updatedAt)
-            ON DUPLICATE KEY UPDATE
-              status     = IF(VALUES(updated_at) >= updated_at, VALUES(status), status),
-              reviewed   = IF(VALUES(updated_at) >= updated_at, VALUES(reviewed), reviewed),
-              updated_at = GREATEST(updated_at, VALUES(updated_at))";
-    $stmt = $pdo->prepare($sql);
-    $n = 0;
-    foreach ($items as $it) {
-        if (empty($it['id']) || !isset($it['status'])) continue;
-        $stmt->execute([
-            ':id'        => substr((string)$it['id'], 0, 190),
-            ':status'    => substr((string)$it['status'], 0, 20),
-            ':reviewed'  => (int)(isset($it['reviewed']) ? $it['reviewed'] : 0),
-            ':updatedAt' => (int)(isset($it['updatedAt']) ? $it['updatedAt'] : 0),
-        ]);
-        $n++;
+    if ($method === 'GET') {
+        $rows = $pdo->query(
+            "SELECT note_id AS id, status, reviewed, updated_at AS updatedAt FROM ipw_progress"
+        )->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as &$r) { $r['reviewed'] = (int)$r['reviewed']; $r['updatedAt'] = (int)$r['updatedAt']; }
+        echo json_encode(['progress' => $rows]);
+        exit;
     }
-    echo json_encode(['ok' => true, 'saved' => $n]);
+
+    if ($method === 'POST') {
+        $body = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($body)) { http_response_code(400); echo json_encode(['error' => 'bad_json']); exit; }
+        $items = isset($body['progress']) && is_array($body['progress'])
+            ? $body['progress']
+            : (isset($body['id']) ? [$body] : []);
+
+        // last-write-wins by updated_at
+        $sql = "INSERT INTO ipw_progress (note_id, status, reviewed, updated_at)
+                VALUES (:id, :status, :reviewed, :updatedAt)
+                ON DUPLICATE KEY UPDATE
+                  status     = IF(VALUES(updated_at) >= updated_at, VALUES(status), status),
+                  reviewed   = IF(VALUES(updated_at) >= updated_at, VALUES(reviewed), reviewed),
+                  updated_at = GREATEST(updated_at, VALUES(updated_at))";
+        $stmt = $pdo->prepare($sql);
+        $n = 0;
+        foreach ($items as $it) {
+            if (empty($it['id']) || !isset($it['status'])) continue;
+            $stmt->execute([
+                ':id'        => substr((string)$it['id'], 0, 190),
+                ':status'    => substr((string)$it['status'], 0, 20),
+                ':reviewed'  => (int)(isset($it['reviewed']) ? $it['reviewed'] : 0),
+                ':updatedAt' => (int)(isset($it['updatedAt']) ? $it['updatedAt'] : 0),
+            ]);
+            $n++;
+        }
+        echo json_encode(['ok' => true, 'saved' => $n]);
+        exit;
+    }
+
+    http_response_code(405);
+    echo json_encode(['error' => 'method_not_allowed']);
+
+} catch (Exception $e) {
+    // shows the real reason (wrong DB user/password/name/host, etc.)
+    http_response_code(500);
+    echo json_encode(['error' => 'db', 'detail' => $e->getMessage()]);
     exit;
 }
-
-http_response_code(405);
-echo json_encode(['error' => 'method_not_allowed']);
