@@ -1,5 +1,6 @@
 # Interview Prep Wiki
 
+[![Live demo](https://img.shields.io/badge/Live%20demo-inkpioneers.in%2Fwiki-2ea44f?logo=googlechrome&logoColor=white)](https://inkpioneers.in/wiki/)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](build.py)
 [![JavaScript](https://img.shields.io/badge/JavaScript-vanilla%20(zero%20deps)-F7DF1E?logo=javascript&logoColor=black)](app/app.js)
 [![PHP](https://img.shields.io/badge/PHP-sync%20API-777BB4?logo=php&logoColor=white)](server/sync.php)
@@ -121,8 +122,43 @@ python build.py --serve --open      # serves at http://localhost:8765
 Then mark pages **New → Learning → Reviewing → Mastered** — the review queue brings them
 back on a spaced schedule. Add or edit a `.md` file, re-run `build.py`, and it shows up.
 
-**Install on your phone + sync across devices:** see **[SELF-HOSTED-SYNC.md](SELF-HOSTED-SYNC.md)**.
-**Publish updates in one command** (rebuild + upload over FTPS): see **[DEPLOY.md](DEPLOY.md)** — then just run `deploy.bat`.
+**Live:** **[inkpioneers.in/wiki](https://inkpioneers.in/wiki/)** — installable on mobile, works offline.
+To run your own copy, see **[Self-hosting & sync](#self-hosting--sync)** and **[Deploy](#deploy)** below.
+
+---
+
+## Self-hosting & sync
+
+The reader is static files + one small PHP endpoint, so it runs on any host — it's
+deployed **[live](https://inkpioneers.in/wiki/)** on shared WordPress hosting in a
+`/wiki/` subfolder, alongside an unrelated WordPress site.
+
+**Host the reader.** Upload everything in `app/` to a web folder (or just open
+`app/index.html` locally). The sync endpoint is baked into `index.html` at build
+time, so there's no separate config file for host security to block.
+
+**Cross-device progress sync (self-hosted).** `server/sync.php` + one MySQL table
+(`server/schema.sql`, auto-created) store **only the status** per note — never the
+note text. Copy `server/config.sample.php` → `config.php` with your DB login (you
+can reuse an existing WordPress database) and a `SYNC_KEY` passphrase. Each device
+signs in once with that passphrase; changes are offline-queued and reconciled
+**last-write-wins**. A Firebase/Firestore backend is also supported — `sync.js`
+auto-detects whichever is configured — but self-hosted needs no third party.
+
+---
+
+## Deploy
+
+Publishing note changes is one step — no manual file uploads:
+
+- **`deploy.bat`** (or `python deploy.py`) rebuilds `notes-data.js`, makes a flat
+  bundle, and uploads it over **FTPS**. Credentials live in a git-ignored
+  `deploy-config.json` (`python deploy.py --ls` lists server folders to find the
+  right one). It never touches the server's `config.php`.
+- **Automatic on `git push`** — [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
+  runs the same build + upload on every push to `main`, using encrypted repo
+  Secrets (`FTP_HOST` / `FTP_USERNAME` / `FTP_PASSWORD`). Edit a note → commit →
+  push → live in ~1 minute.
 
 ---
 
