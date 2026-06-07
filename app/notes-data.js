@@ -218,6 +218,7 @@
     "updated": "2026-05-29",
     "body": "## The core idea\nA matrix is an **array of arrays**. Address a cell by `(row, col)` → `grid[r][c]`.\nDimensions: `rows = len(grid)`, `cols = len(grid[0])`.\n\n```\n            c=0  c=1  c=2\n          +----+----+----+\n   r=0    |  1 |  2 |  3 |\n          +----+----+----+\n   r=1    |  4 |  5 |  6 |     grid[1][2] = 6\n          +----+----+----+\n   r=2    |  7 |  8 |  9 |\n          +----+----+----+\n```\n\n## Traversal directions\n```python\nrows, cols = len(grid), len(grid[0])\n\nfor r in range(rows):              # row-major (most common)\n    for c in range(cols):\n        visit(grid[r][c])\n\nfor c in range(cols):              # column-major\n    for r in range(rows):\n        visit(grid[r][c])\n```\n**Diagonals:** main diagonal cells share `r == c`; anti-diagonal cells share\n`r + c == cols - 1`. Cells on the *same* diagonal share a constant `r - c`.\n\n## The 4-neighbor trick (used in grid BFS/DFS)\n```python\nDIRS = [(-1,0),(1,0),(0,-1),(0,1)]      # up, down, left, right\nfor dr, dc in DIRS:\n    nr, nc = r + dr, c + dc\n    if 0 <= nr < rows and 0 <= nc < cols:   # bounds check!\n        visit(grid[nr][nc])\n```\n\n## Worked example — Spiral Matrix\nKeep four shrinking borders (top, bottom, left, right). Walk right → down → left\n→ up, peeling a layer each loop.\n```\n +--->---+\n |  1 2 3|        order: 1 2 3 | 6 9 | 8 7 | 4 | 5\n |  4 5 6|\n |  7 8 9|\n```\n```python\ndef spiral_order(grid):\n    res = []\n    top, bottom = 0, len(grid) - 1\n    left, right = 0, len(grid[0]) - 1\n    while top <= bottom and left <= right:\n        for c in range(left, right + 1): res.append(grid[top][c])\n        top += 1\n        for r in range(top, bottom + 1): res.append(grid[r][right])\n        right -= 1\n        if top <= bottom:\n            for c in range(right, left - 1, -1): res.append(grid[bottom][c])\n            bottom -= 1\n        if left <= right:\n            for r in range(bottom, top - 1, -1): res.append(grid[r][left])\n            left += 1\n    return res\n```\n\n## Worked example — Rotate Image 90° (in place)\n**Transpose** (swap across the main diagonal), then **reverse each row**.\n```\n 1 2 3      transpose     1 4 7    reverse rows    7 4 1\n 4 5 6   ------------->   2 5 8   ------------->    8 5 2\n 7 8 9                    3 6 9                      9 6 3\n```\n```python\ndef rotate(grid):\n    n = len(grid)\n    for r in range(n):                      # transpose\n        for c in range(r + 1, n):\n            grid[r][c], grid[c][r] = grid[c][r], grid[r][c]\n    for row in grid:                        # reverse each row\n        row.reverse()\n```\n\n## Worked example — Number of Islands (grid DFS)\nEach unvisited '1' starts an island; flood-fill its connected land so you don't\nrecount it.\n```python\ndef num_islands(grid):\n    if not grid: return 0\n    rows, cols = len(grid), len(grid[0])\n    def sink(r, c):\n        if 0 <= r < rows and 0 <= c < cols and grid[r][c] == '1':\n            grid[r][c] = '0'                  # mark visited\n            sink(r+1,c); sink(r-1,c); sink(r,c+1); sink(r,c-1)\n    count = 0\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == '1':\n                count += 1\n                sink(r, c)\n    return count\n```\n\n## Practice\n| Problem | Idea |\n|---|---|\n| Spiral Matrix | four shrinking borders |\n| Rotate Image | transpose + reverse rows |\n| Set Matrix Zeroes | use first row/col as markers (O(1) space) |\n| Word Search | DFS + backtracking from each cell |\n| Number of Islands | flood-fill DFS/BFS |\n\n## Pitfalls\n- **Always bounds-check** `0 <= nr < rows and 0 <= nc < cols` before indexing.\n- `[[0]*c]*r` makes **shared** rows (aliasing bug!). Use `[[0]*c for _ in range(r)]`.\n- Don't forget to **mark visited**, or grid DFS recurses forever.\n\n## Related\n- Grid DFS/BFS connect to graphs (seeded [[graphs]]) · backtracking in [[arrays-12-advanced]]\n- Next: [[arrays-11-greedy]]\n",
     "related": [
+      "graphs",
       "arrays-12-advanced",
       "arrays-11-greedy"
     ]
@@ -279,6 +280,87 @@
       "arrays-06-kadane",
       "arrays-11-greedy",
       "arrays-00-roadmap"
+    ]
+  },
+  {
+    "id": "backtracking",
+    "title": "Backtracking",
+    "domain": "Coding / DSA",
+    "group": "Backtracking",
+    "tags": [
+      "dsa",
+      "backtracking",
+      "recursion"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\n\"Generate / find **all** ...\" — **subsets, permutations, combinations**, or \"place\nthings subject to rules\" (N-Queens, Sudoku, word search). You explore a decision\ntree: **choose → recurse → un-choose** (backtrack), pruning branches that can't work.\n\n```\n subsets of [1,2,3] — at each element: include or skip\n                 []\n        /                 \\\n      [1]                  []\n     /    \\              /    \\\n   [1,2]  [1]          [2]    []\n   ...    ...          ...    ...\n```\n\n## The universal template\n```python\ndef backtrack(path, choices):\n    if is_complete(path):\n        results.append(path[:])      # copy! path keeps mutating\n        return\n    for c in choices:\n        if not allowed(c, path):     # prune\n            continue\n        path.append(c)               # choose\n        backtrack(path, next_choices(c))\n        path.pop()                   # un-choose (backtrack)\n```\n\n## Subsets\n```python\ndef subsets(nums):\n    res, path = [], []\n    def bt(start):\n        res.append(path[:])                  # every node is a subset\n        for i in range(start, len(nums)):\n            path.append(nums[i])\n            bt(i + 1)                        # i+1: don't reuse earlier elems\n            path.pop()\n    bt(0)\n    return res\n```\n\n## Permutations\n```python\ndef permute(nums):\n    res, path, used = [], [], [False] * len(nums)\n    def bt():\n        if len(path) == len(nums):\n            res.append(path[:]); return\n        for i in range(len(nums)):\n            if used[i]:\n                continue\n            used[i] = True; path.append(nums[i])\n            bt()\n            path.pop(); used[i] = False\n    bt()\n    return res\n```\n\n## Combinations / handling duplicates\n- **Combinations** (choose k, order doesn't matter): pass a `start` index so you\n  only go forward (like subsets but stop at size k).\n- **Skip duplicates**: sort first, then `if i > start and nums[i] == nums[i-1]: continue`.\n- **Reuse allowed** (Combination Sum): recurse with `i` instead of `i+1`.\n\n## Complexity\nExponential by nature — you're enumerating an output that's exponentially large:\n- Subsets: **O(n · 2ⁿ)** · Permutations: **O(n · n!)** · Combinations: O(k · C(n,k)).\n- Pruning (cutting impossible branches early) is what makes hard cases tractable.\n\n## Canonical problems (NeetCode)\n| Problem | Twist |\n|---|---|\n| Subsets / Subsets II | include-or-skip; II = skip dups |\n| Permutations / Permutations II | `used[]`; II = skip dups |\n| Combination Sum / II | reuse (`i`) vs no-reuse (`i+1`) |\n| Word Search | DFS on a grid, mark visited, un-mark |\n| Palindrome Partitioning | cut points + palindrome check |\n| N-Queens | place per row, track cols/diagonals |\n| Letter Combinations of a Phone Number | map digit→letters, branch |\n\n## Gotchas / re-solve notes\n- **Append a *copy*** (`path[:]`), not `path` — the list keeps mutating.\n- Every `choose` needs a matching `un-choose` (`pop`), or state leaks across branches.\n- **Sort before** dedup logic; the `i > start` guard skips only *sibling* duplicates.\n- Grid backtracking: mark a cell visited **before** recursing, restore it after.\n\n## Related\n- It's DFS on a decision tree → builds on [[trees]] recursion\n- Grid backtracking borders [[graphs]] DFS; optimization variants become [[dynamic-programming]]\n",
+    "related": [
+      "trees",
+      "graphs",
+      "dynamic-programming"
+    ]
+  },
+  {
+    "id": "dynamic-programming",
+    "title": "Dynamic Programming",
+    "domain": "Coding / DSA",
+    "group": "Dynamic Programming",
+    "tags": [
+      "dsa",
+      "dp",
+      "memoization"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nTwo signals together: **(1) overlapping subproblems** (the same smaller problem\nrecurs) and **(2) optimal substructure** (the answer is built from answers to\nsmaller versions). Phrases like *\"number of ways\", \"min/max cost\", \"longest/shortest\n…\", \"can you reach …\"* over choices that interact → DP.\n\n> Greedy fails when a locally-best choice can be wrong later. DP considers the\n> options and reuses results so it doesn't re-compute. (Contrast: [[greedy]].)\n\n## The recipe (derive any DP)\n```\n 1. STATE     what does dp[i] (or dp[i][j]) MEAN, in words?\n 2. CHOICE    at a state, what options do I have?\n 3. RECURRENCE combine smaller states for each choice; take best/sum\n 4. BASE      smallest input(s)\n 5. ORDER     fill so dependencies are ready (bottom-up), or memoize (top-down)\n 6. OPTIMIZE  if dp[i] needs only dp[i-1], dp[i-2] -> drop to O(1) variables\n```\n\n## Top-down (memoized recursion) vs bottom-up (table)\n```python\nfrom functools import lru_cache\n\n# Top-down: natural to write — add a cache to the recursion\ndef climb(n):\n    @lru_cache(None)\n    def ways(i):\n        if i <= 2: return i\n        return ways(i-1) + ways(i-2)\n    return ways(n)\n\n# Bottom-up: fill iteratively, often O(1) space\ndef climb_bu(n):\n    a, b = 1, 2\n    for _ in range(n - 1):\n        a, b = b, a + b\n    return a\n```\n\n## 1-D DP — House Robber\n`dp[i] = best using houses up to i`; at i, **skip** (dp[i-1]) or **rob** (arr[i]+dp[i-2]).\n```python\ndef rob(arr):\n    prev2 = prev1 = 0\n    for x in arr:\n        prev2, prev1 = prev1, max(prev1, x + prev2)\n    return prev1                      # O(n) time, O(1) space\n```\n\n## 2-D DP — grid / two sequences\nState spans two axes (positions in two strings, or a grid cell). Classic shape:\n```\n Longest Common Subsequence of A, B:\n dp[i][j] = LCS of A[:i], B[:j]\n   if A[i-1]==B[j-1]: dp[i][j] = dp[i-1][j-1] + 1\n   else:              dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n```\n```python\ndef lcs(a, b):\n    dp = [[0]*(len(b)+1) for _ in range(len(a)+1)]\n    for i in range(1, len(a)+1):\n        for j in range(1, len(b)+1):\n            if a[i-1] == b[j-1]:\n                dp[i][j] = dp[i-1][j-1] + 1\n            else:\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    return dp[-1][-1]\n```\n\n## Complexity\nUsually **O(states × work-per-state)**. 1-D ≈ O(n); 2-D ≈ O(n·m). Memory often\nreduces to one or two rows/variables once you see the dependency.\n\n## Canonical problems (NeetCode)\n| Problem | Family |\n|---|---|\n| Climbing Stairs · House Robber I/II | 1-D |\n| Coin Change · Combination Sum IV | unbounded 1-D |\n| Longest Increasing Subsequence | 1-D (or patience/binary search) |\n| Maximum Product Subarray · Maximum Subarray | running 1-D ([[arrays-06-kadane]]) |\n| Longest Common Subsequence · Edit Distance | 2-D, two strings |\n| Unique Paths · Min Path Sum | 2-D grid |\n| 0/1 Knapsack · Partition Equal Subset Sum | 2-D (capacity) |\n| Longest Palindromic Substring | 2-D / expand-around-center |\n\n## Gotchas / re-solve notes\n- **Write the state meaning in one sentence first** — a vague state = wrong recurrence.\n- Nail **base cases** (empty / size 0) and the **fill order** (deps before use).\n- Off-by-one: a `+1` sized table (`dp[n+1]`) makes string/grid bounds cleaner.\n- Start top-down with `@lru_cache` to get it correct, then convert to bottom-up if needed.\n\n## Related\n- 1-D DP on arrays is detailed in [[arrays-13-dp]]; max-subarray is [[arrays-06-kadane]]\n- Decide DP vs [[greedy]] by whether a local choice can be safely committed\n",
+    "related": [
+      "greedy",
+      "arrays-06-kadane",
+      "arrays-13-dp"
+    ]
+  },
+  {
+    "id": "graphs",
+    "title": "Graphs",
+    "domain": "Coding / DSA",
+    "group": "Graphs",
+    "tags": [
+      "dsa",
+      "graphs",
+      "bfs",
+      "dfs",
+      "topological-sort",
+      "union-find"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nAnything about **connections**: shortest path, \"are these connected?\", grids\n(islands/rooms), course prerequisites, networks. The toolkit: **BFS** (shortest\npath in *unweighted* graphs), **DFS** (reachability, components, cycles),\n**topological sort** (ordering with dependencies), **union-find** (connectivity),\nand **Dijkstra** (shortest path with weights).\n\n```\n graph as an adjacency list:\n   A — B        adj = {A:[B,C], B:[A,D], C:[A,D], D:[B,C]}\n   |   |\n   C — D\n Grids are graphs too: each cell connects to up/down/left/right.\n```\n\n## DFS & BFS (memorize both)\n```python\nfrom collections import deque\n\ndef dfs(node, adj, seen):\n    seen.add(node)\n    for nxt in adj[node]:\n        if nxt not in seen:\n            dfs(nxt, adj, seen)\n\ndef bfs(start, adj):\n    seen = {start}\n    q = deque([start])\n    while q:\n        node = q.popleft()\n        for nxt in adj[node]:\n            if nxt not in seen:\n                seen.add(nxt)         # mark on ENQUEUE, not dequeue\n                q.append(nxt)\n```\n**Always track `seen`** — without it you loop forever on cycles. **BFS = shortest\npath** (fewest edges) in an unweighted graph; DFS does not guarantee shortest.\n\n## Grid pattern (islands, rooms, flood fill)\n```python\ndef num_islands(grid):\n    rows, cols = len(grid), len(grid[0])\n    def sink(r, c):\n        if 0 <= r < rows and 0 <= c < cols and grid[r][c] == \"1\":\n            grid[r][c] = \"0\"                    # mark visited\n            for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)):\n                sink(r+dr, c+dc)\n    count = 0\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == \"1\":\n                count += 1; sink(r, c)\n    return count\n```\n\n## Topological sort (dependencies / ordering)\nFor a DAG: order nodes so every edge points forward. **Kahn's algorithm** (BFS on\nin-degrees) also **detects cycles** (used in \"Course Schedule\").\n```python\ndef topo_order(n, edges):                 # edges: [a, b] means a -> b\n    from collections import deque, defaultdict\n    adj = defaultdict(list); indeg = [0]*n\n    for a, b in edges:\n        adj[a].append(b); indeg[b] += 1\n    q = deque(i for i in range(n) if indeg[i] == 0)\n    order = []\n    while q:\n        node = q.popleft(); order.append(node)\n        for nxt in adj[node]:\n            indeg[nxt] -= 1\n            if indeg[nxt] == 0: q.append(nxt)\n    return order if len(order) == n else []   # [] => cycle\n```\n\n## Union-Find (Disjoint Set) — fast connectivity\n```python\nclass DSU:\n    def __init__(self, n): self.p = list(range(n))\n    def find(self, x):\n        while self.p[x] != x:\n            self.p[x] = self.p[self.p[x]]      # path compression\n            x = self.p[x]\n        return x\n    def union(self, a, b):\n        ra, rb = self.find(a), self.find(b)\n        if ra == rb: return False              # already connected (cycle)\n        self.p[ra] = rb; return True\n```\n\n## Complexity\n- BFS/DFS: **O(V + E)** (vertices + edges). Grid: O(rows·cols).\n- Topological sort: O(V + E). Union-Find: ~O(1) amortized per op.\n- Dijkstra (weighted, non-negative) with a heap: **O(E log V)**.\n\n## Canonical problems (NeetCode)\n| Problem | Tool |\n|---|---|\n| Number of Islands / Max Area of Island | grid DFS/BFS |\n| Clone Graph | DFS/BFS + hashmap of copies |\n| Course Schedule I / II | topological sort (cycle check / order) |\n| Pacific Atlantic Water Flow | multi-source DFS from borders |\n| Rotting Oranges | multi-source BFS (time = levels) |\n| Number of Connected Components | union-find or DFS |\n| Network Delay Time | Dijkstra (heap) |\n| Word Ladder | BFS on word graph |\n\n## Gotchas / re-solve notes\n- **Never forget `seen`** — and for BFS, mark visited **when you enqueue**, not when\n  you dequeue (else nodes get added multiple times).\n- Recursion depth: deep/large graphs can blow the stack — use an **iterative** DFS\n  (explicit [[stack]]) or BFS.\n- BFS gives shortest path only when **edges are unweighted/equal**; weighted → Dijkstra.\n- Grids: bounds-check before indexing; the 4 (or 8) directions are a fixed list.\n\n## Related\n- Grid problems overlap [[backtracking]] (Word Search) and matrix work in [[arrays-10-matrix]]\n- Dijkstra uses a [[heap]]; BFS/DFS extend [[trees]] traversal to general graphs\n",
+    "related": [
+      "stack",
+      "backtracking",
+      "arrays-10-matrix",
+      "heap",
+      "trees"
+    ]
+  },
+  {
+    "id": "greedy",
+    "title": "Greedy",
+    "domain": "Coding / DSA",
+    "group": "Greedy",
+    "tags": [
+      "dsa",
+      "greedy"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nWhen a **locally-optimal choice is provably safe** — take the best option at each\nstep and never reconsider. One pass, usually **O(n)** (plus sorting). Common shapes:\n\"max reach\", \"fewest of X\", \"schedule the most\", \"buy low / sell high\".\n\n> The trap: greedy is *wrong* when an early choice can sabotage a later one. If you\n> can build a small counterexample, you need [[dynamic-programming|DP]] instead.\n\n## Greedy vs DP — the deciding question\n```\n \"Does committing to the best-looking choice NOW ever hurt me later?\"\n   No  -> greedy (prove the exchange argument / it's monotonic)\n   Yes -> DP (consider options, reuse subresults)\n```\n\n## Worked example — Jump Game (can you reach the end?)\nTrack the **farthest** index reachable; if you ever stand beyond it, you're stuck.\n```python\ndef can_jump(nums):\n    reach = 0\n    for i, n in enumerate(nums):\n        if i > reach:\n            return False\n        reach = max(reach, i + n)\n    return True\n```\n\n## Worked example — Maximum subarray (Kadane, a greedy/DP hybrid)\nDrop the running sum whenever it goes negative — it can only hurt what follows.\n```python\ndef max_subarray(nums):\n    best = cur = nums[0]\n    for x in nums[1:]:\n        cur = max(x, cur + x)     # restart vs extend\n        best = max(best, cur)\n    return best\n```\n\n## Common greedy moves\n- **Sort, then sweep** — intervals (keep the one that ends earliest), assign cookies, etc.\n- **Track a running best** — farthest reach, min price so far, current end of a \"jump\".\n- **Exchange argument** — show that swapping toward the greedy choice never worsens\n  the answer (this is your informal proof it's correct).\n\n## Complexity\nTypically **O(n)**, or **O(n log n)** when a sort sets up the greedy order.\n\n## Canonical problems (NeetCode / classic)\n| Problem | Greedy choice |\n|---|---|\n| Jump Game / Jump Game II | farthest reach / extend current jump |\n| Gas Station | reset start when the tank goes negative |\n| Best Time to Buy & Sell Stock | track min price so far |\n| Maximum Subarray | drop negative running sum (Kadane) |\n| Hand of Straights / Partition Labels | sort + grouping sweep |\n| Non-overlapping Intervals | sort by end, keep earliest-ending |\n| Merge Intervals | sort by start, extend ([[intervals]]) |\n\n## Gotchas / re-solve notes\n- **Sanity-check greedy with a tiny adversarial example** before trusting it.\n- Many greedy problems need a **sort first** ([[arrays-07-sorting]]) — count that cost.\n- \"Min number of …\" and \"max number of non-conflicting …\" are usually greedy; \"number\n  of ways\" / \"min cost with interacting choices\" are usually [[dynamic-programming|DP]].\n\n## Related\n- Array-specific greedy (Candy, Gas Station) is detailed in [[arrays-11-greedy]]\n- Interval greedy lives in [[intervals]]; contrast with [[dynamic-programming]]\n",
+    "related": [
+      "dynamic-programming",
+      "intervals",
+      "arrays-07-sorting",
+      "arrays-11-greedy"
     ]
   },
   {
@@ -420,6 +502,147 @@
       "hashing-02-frequency-map",
       "hashing-03-set-lookup",
       "hashing-00-roadmap"
+    ]
+  },
+  {
+    "id": "heap",
+    "title": "Heap / Priority Queue",
+    "domain": "Coding / DSA",
+    "group": "Heap",
+    "tags": [
+      "dsa",
+      "heap",
+      "priority-queue"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nA **heap** (priority queue) always gives you the **smallest (or largest) item in\nO(1)**, with O(log n) insert/remove. Reach for it when you need:\n- **Top-K / K-th largest / smallest**\n- **Merge K sorted** things\n- A value that changes as a stream arrives (\"median so far\", \"next task\")\n- \"Repeatedly take the best remaining option\"\n\nPython's `heapq` is a **min-heap** on a plain list. For a max-heap, push negatives.\n\n```\n min-heap (parent <= children) — root is the minimum:\n          1\n        /   \\\n       3     2\n      / \\\n     5   4      heap[0] == 1 == min\n```\n\n## Core operations\n```python\nimport heapq\nh = []\nheapq.heappush(h, 5)      # O(log n)\nheapq.heappush(h, 1)\nheapq.heappush(h, 3)\nheapq.heappop(h)          # -> 1 (the min), O(log n)\nh[0]                      # peek min, O(1)\nheapq.heapify(nums)       # build a heap in O(n)\nheapq.nlargest(k, nums)   # / nsmallest\n```\n**Max-heap trick:** push `-x`, pop and negate. **Pair priority:** push tuples\n`(priority, item)` — they compare by the first element.\n\n## The \"top-K with a size-K heap\" pattern\nFor **K largest**, keep a **min-heap of size K**: the smallest of your K best sits\nat the root, so a new item only enters if it beats it. O(n log k), O(k) space.\n```python\ndef k_largest(nums, k):\n    h = []\n    for x in nums:\n        heapq.heappush(h, x)\n        if len(h) > k:\n            heapq.heappop(h)     # drop the smallest -> keep top K\n    return h                     # the k largest (unordered)\n```\n\n## Worked example — K-th largest, and Merge K lists\n```python\ndef kth_largest(nums, k):\n    return heapq.nlargest(k, nums)[-1]\n\n# Merge K sorted lists: heap of (value, list_index, node)\ndef merge_k(lists):\n    import heapq\n    h = [(l.val, i, l) for i, l in enumerate(lists) if l]\n    heapq.heapify(h)\n    dummy = tail = ListNode()\n    while h:\n        val, i, node = heapq.heappop(h)\n        tail.next = node; tail = node\n        if node.next:\n            heapq.heappush(h, (node.next.val, i, node.next))\n    return dummy.next\n```\n\n## Complexity\n| Op | Cost |\n|---|---|\n| peek min | O(1) |\n| push / pop | O(log n) |\n| heapify (build) | O(n) |\n| top-K via size-K heap | O(n log k) |\n\n## Canonical problems (NeetCode)\n| Problem | Idea |\n|---|---|\n| Kth Largest Element in an Array | size-K min-heap (or quickselect) |\n| K Closest Points to Origin | size-K heap by distance |\n| Top K Frequent Elements | count then heap / bucket sort |\n| Task Scheduler | max-heap of counts |\n| Find Median from Data Stream | two heaps (max-heap low half, min-heap high half) |\n| Merge K Sorted Lists | heap of list heads |\n\n## Gotchas / re-solve notes\n- `heapq` is **min-only** — negate for max-heap.\n- For \"top K largest\" use a **min-heap of size K** (counter-intuitive but correct).\n- Put a tie-breaker in the tuple (e.g., an index) so Python never compares the\n  un-comparable payload object.\n- \"Median of a stream\" = balance **two heaps**; keep their sizes within 1.\n\n## Related\n- Often follows [[hashing-02-frequency-map|frequency counting]] (Top-K)\n- Merge-K builds on [[linked-list]]; alternative to a size-K heap is quickselect ([[arrays-07-sorting]])\n",
+    "related": [
+      "hashing-02-frequency-map",
+      "linked-list",
+      "arrays-07-sorting"
+    ]
+  },
+  {
+    "id": "intervals",
+    "title": "Intervals",
+    "domain": "Coding / DSA",
+    "group": "Intervals",
+    "tags": [
+      "dsa",
+      "intervals",
+      "sorting",
+      "greedy"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nAnything with **ranges `[start, end]`** that can overlap: merging bookings,\nmeeting-room scheduling, \"can attend all meetings?\", inserting a new range. The\nmove is almost always: **sort by start** (sometimes by end), then sweep once.\n\n```\n intervals:    [1,3]  [2,6]      [8,10]   [15,18]\n number line:  1—3\n                 2————6\n                          8——10\n                                  15——18\n overlap when  next.start <= current.end\n```\n\n## Merge overlapping intervals\nSort by start; extend the current interval while the next one overlaps, else start a new one.\n```python\ndef merge(intervals):\n    intervals.sort(key=lambda iv: iv[0])\n    out = [intervals[0]]\n    for s, e in intervals[1:]:\n        if s <= out[-1][1]:                  # overlaps the last kept\n            out[-1][1] = max(out[-1][1], e)  # extend the end\n        else:\n            out.append([s, e])\n    return out\n```\n\n## Can attend all meetings? / how many rooms?\n- **Can attend all** = no overlap: sort by start, check `intervals[i].start >= intervals[i-1].end`.\n- **Min meeting rooms** = max simultaneous overlap. Separate the starts and ends,\n  sort each, and sweep with two pointers (or use a min-heap of end times).\n```python\ndef min_rooms(intervals):\n    starts = sorted(i[0] for i in intervals)\n    ends   = sorted(i[1] for i in intervals)\n    rooms = best = 0\n    s = e = 0\n    while s < len(starts):\n        if starts[s] < ends[e]:\n            rooms += 1; s += 1               # a meeting starts -> need a room\n            best = max(best, rooms)\n        else:\n            rooms -= 1; e += 1               # a meeting ends -> free a room\n    return best\n```\n\n## Insert interval (into a sorted, non-overlapping list)\nAdd all intervals ending before the new one, merge all that overlap, then add the rest.\n```python\ndef insert(intervals, new):\n    res, i, n = [], 0, len(intervals)\n    while i < n and intervals[i][1] < new[0]:    # before, no overlap\n        res.append(intervals[i]); i += 1\n    while i < n and intervals[i][0] <= new[1]:   # overlapping -> merge\n        new = [min(new[0], intervals[i][0]), max(new[1], intervals[i][1])]\n        i += 1\n    res.append(new)\n    res.extend(intervals[i:])                    # after\n    return res\n```\n\n## Complexity\nDominated by the **sort: O(n log n)**; the sweep is O(n). Insert into an already-sorted\nlist is O(n) (no sort needed).\n\n## Canonical problems (NeetCode)\n| Problem | Idea |\n|---|---|\n| Merge Intervals | sort by start, extend |\n| Insert Interval | before / merge / after |\n| Non-overlapping Intervals (min removals) | sort by **end**, greedy keep |\n| Meeting Rooms | sort, check adjacent overlap |\n| Meeting Rooms II (min rooms) | two-pointer sweep or min-heap of ends |\n\n## Gotchas / re-solve notes\n- Decide **sort key**: by **start** for merging; by **end** for \"max non-overlapping\" greedy.\n- Overlap test is `a.start <= b.end` — get the `<` vs `<=` right for touching ranges.\n- \"Min rooms\" = peak concurrency; the start/end two-pointer sweep is the clean O(n log n).\n\n## Related\n- It's [[arrays-07-sorting|sorting]] + a [[greedy]] sweep; rooms use a [[heap]]\n",
+    "related": [
+      "arrays-07-sorting",
+      "greedy",
+      "heap"
+    ]
+  },
+  {
+    "id": "linked-list",
+    "title": "Linked List",
+    "domain": "Coding / DSA",
+    "group": "Linked List",
+    "tags": [
+      "dsa",
+      "linked-list",
+      "two-pointers"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nLinked-list problems test **pointer manipulation**, not cleverness. The recurring\nmoves are: **reverse**, **fast/slow pointers**, **merge**, **dummy head**, and\n**cycle detection**. If you can do those five, you can do most of them.\n\n```\n a singly linked list:\n [1|·]──▶[2|·]──▶[3|·]──▶[4|None]\n  head\n each node: { val, next }\n```\n```python\nclass ListNode:\n    def __init__(self, val=0, nxt=None):\n        self.val, self.next = val, nxt\n```\n\n## Move 1 — Reverse a list (the most important)\nRe-point each `next` backward, carrying a `prev`.\n```\n before: 1 -> 2 -> 3 -> None\n after:  None <- 1 <- 2 <- 3   (return 3)\n```\n```python\ndef reverse(head):\n    prev = None\n    while head:\n        nxt = head.next     # save\n        head.next = prev    # flip\n        prev = head         # advance prev\n        head = nxt          # advance head\n    return prev\n```\n\n## Move 2 — Fast / slow pointers\n`slow` moves 1 step, `fast` moves 2. When `fast` hits the end, `slow` is at the\n**middle**. If they ever meet, there's a **cycle** (Floyd's algorithm).\n```python\ndef middle(head):\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n    return slow            # middle node\n\ndef has_cycle(head):\n    slow = fast = head\n    while fast and fast.next:\n        slow, fast = slow.next, fast.next.next\n        if slow is fast:\n            return True\n    return False\n```\n\n## Move 3 — Dummy head (clean merges/removals)\nA dummy node before the head removes special-casing of the first element.\n```python\ndef merge_two(a, b):\n    dummy = tail = ListNode()\n    while a and b:\n        if a.val <= b.val: tail.next, a = a, a.next\n        else:              tail.next, b = b, b.next\n        tail = tail.next\n    tail.next = a or b          # attach the rest\n    return dummy.next\n```\n\n## Complexity\n- Traverse / reverse / merge: **O(n)** time, **O(1)** space (iterative).\n- Recursive reverse is O(n) time but O(n) stack space — prefer iterative.\n\n## Canonical problems (NeetCode)\n| Problem | Move |\n|---|---|\n| Reverse Linked List | reverse |\n| Merge Two Sorted Lists | dummy head + merge |\n| Linked List Cycle | fast/slow (Floyd) |\n| Reorder List | find middle → reverse 2nd half → merge |\n| Remove Nth Node From End | two pointers n apart + dummy |\n| Add Two Numbers | dummy head + carry |\n| LRU Cache | hashmap + doubly linked list |\n| Merge K Sorted Lists | heap of heads ([[heap]]) or divide-and-conquer |\n\n## Gotchas / re-solve notes\n- **Save `head.next` before you overwrite it** in reverse, or you lose the rest.\n- Guard `while fast and fast.next` (two-step) to avoid `None.next` crashes.\n- Use a **dummy head** whenever the first node might change — far fewer edge cases.\n- Drawing 3–4 nodes and moving arrows by hand beats guessing.\n\n## Related\n- Fast/slow is the [[arrays-03-two-pointers|two-pointer]] idea on nodes\n- LRU Cache combines this with [[hashing-01-fundamentals|hashing]]; Merge-K uses [[heap]]\n",
+    "related": [
+      "heap",
+      "arrays-03-two-pointers",
+      "hashing-01-fundamentals"
+    ]
+  },
+  {
+    "id": "math-and-bits",
+    "title": "Math & Bit Manipulation",
+    "domain": "Coding / DSA",
+    "group": "Math & Bits",
+    "tags": [
+      "dsa",
+      "math",
+      "bit-manipulation"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nTwo small but high-yield areas:\n- **Bit manipulation** — \"without using +\", \"single number\", \"count bits\", subsets via\n  bitmask, flags. O(1)-ish tricks that look like magic until you know them.\n- **Math** — overflow-safe tricks, digit problems, gcd, primes, fast power, geometry\n  on grids (matrix rotate/spiral live in [[arrays-10-matrix]]).\n\n## Bit operators (the toolkit)\n```\n &  AND     x & 1     -> is x odd?            (lowest bit)\n |  OR      x | y     -> set bits\n ^  XOR     x ^ x = 0,  x ^ 0 = x            (the workhorse)\n ~  NOT     ~x = -x-1\n << >> shift  x << 1 = x*2,  x >> 1 = x//2\n x & (x-1)   -> clears the lowest set bit\n x & -x      -> isolates the lowest set bit\n```\n\n## The XOR trick — Single Number\nEvery number that appears twice cancels itself (`a ^ a = 0`); the lone one remains.\n```python\ndef single_number(nums):\n    out = 0\n    for x in nums:\n        out ^= x          # pairs cancel, the unique survives\n    return out\n```\n\n## Counting bits / power-of-two\n```python\ndef count_ones(x):\n    c = 0\n    while x:\n        x &= x - 1        # drop the lowest set bit each step\n        c += 1\n    return c\n\ndef is_power_of_two(x):\n    return x > 0 and (x & (x - 1)) == 0   # exactly one bit set\n```\n\n## Add without `+` (full-adder with bits)\n`a ^ b` is the sum without carry; `(a & b) << 1` is the carry — repeat until no carry.\n```python\ndef add(a, b):\n    mask = 0xFFFFFFFF\n    while b & mask:\n        a, b = (a ^ b) & mask, ((a & b) << 1) & mask\n    return a if a <= 0x7FFFFFFF else ~(a ^ mask)\n```\n\n## Handy math\n```python\nimport math\nmath.gcd(a, b)                 # Euclid's algorithm, O(log min)\npow(base, exp, mod)            # fast modular exponentiation, O(log exp)\n# subsets via bitmask: for mask in range(1 << n): bits of mask = chosen items\n```\n\n## Complexity\n- Bit ops are O(1); loops over the 32/64 bits are O(1) for fixed-width ints.\n- `gcd` / fast power: **O(log n)**. Sieve of Eratosthenes (all primes ≤ n): O(n log log n).\n\n## Canonical problems (NeetCode)\n| Problem | Trick |\n|---|---|\n| Single Number | XOR all |\n| Number of 1 Bits | `x &= x-1` loop |\n| Counting Bits (0..n) | `dp[i] = dp[i >> 1] + (i & 1)` |\n| Reverse Bits | shift out / shift in |\n| Missing Number | XOR indices vs values (or sum formula) |\n| Sum of Two Integers | XOR + carry loop |\n| Pow(x, n) | fast exponentiation (halve the power) |\n\n## Gotchas / re-solve notes\n- **`x & (x-1)`** clears the lowest set bit — the basis of bit-count and power-of-two.\n- XOR is its own inverse — great for \"find the one that doesn't pair up\".\n- In Python ints are unbounded; bit problems that assume 32-bit need masking (`& 0xFFFFFFFF`).\n- `pow(b, e, m)` is the fast, overflow-safe modular power — don't hand-roll it.\n\n## Related\n- Bitmask subsets connect to [[backtracking]]; grid math is in [[arrays-10-matrix]]\n- \"Counting Bits\" is a tiny [[dynamic-programming|DP]]\n",
+    "related": [
+      "arrays-10-matrix",
+      "backtracking",
+      "dynamic-programming"
+    ]
+  },
+  {
+    "id": "stack",
+    "title": "Stack",
+    "domain": "Coding / DSA",
+    "group": "Stack",
+    "tags": [
+      "dsa",
+      "stack",
+      "monotonic-stack"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\n- **Matching / nesting**: parentheses, tags, undo — \"the most recent unmatched thing\"\n- **\"Next greater / smaller element\"**, \"days until warmer\" → **monotonic stack**\n- Evaluating expressions (RPN), simplifying paths\n- Turning recursion into iteration (an explicit stack)\n\nA stack is **LIFO** — last in, first out. In Python a plain `list` is your stack:\n`push = append`, `pop = pop()`, `peek = stack[-1]`.\n\n## The idea\n```\n push 1,2,3 then pop:\n   push        pop -> 3\n  ┌───┐        ┌───┐\n  │ 3 │ <- top │ 2 │ <- top now\n  │ 2 │        │ 1 │\n  │ 1 │        └───┘\n  └───┘\n```\n\n## Template — valid parentheses (matching)\nPush openers; on a closer, the top must be its match.\n```python\ndef is_valid(s):\n    pairs = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n    stack = []\n    for c in s:\n        if c in pairs:                      # a closer\n            if not stack or stack.pop() != pairs[c]:\n                return False\n        else:                               # an opener\n            stack.append(c)\n    return not stack                        # all matched?\n```\n\n## Template — monotonic stack (\"next greater element\")\nKeep the stack **decreasing**; when a bigger value arrives, it resolves everything\nsmaller below it. Each index is pushed/popped once → **O(n)**.\n```\n nums = [2, 1, 2, 4]   next greater:\n stack holds indices with no greater element yet\n 4 arrives -> pops 2,1,2 (their next-greater is 4)\n```\n```python\ndef next_greater(nums):\n    res = [-1] * len(nums)\n    stack = []                       # indices, values decreasing\n    for i, x in enumerate(nums):\n        while stack and nums[stack[-1]] < x:\n            res[stack.pop()] = x\n        stack.append(i)\n    return res\n```\n\n## Complexity\n- Push / pop / peek: **O(1)**.\n- Monotonic-stack scans: **O(n)** total (amortized — each element in/out once).\n\n## Canonical problems (NeetCode)\n| Problem | Idea |\n|---|---|\n| Valid Parentheses | matching stack |\n| Min Stack | stack of (val, running-min) |\n| Evaluate Reverse Polish Notation | push operands, apply on operator |\n| Daily Temperatures | monotonic (decreasing) stack of indices |\n| Car Fleet | sort by position, stack of arrival times |\n| Largest Rectangle in Histogram | monotonic increasing stack |\n| Generate Parentheses | backtracking (see [[backtracking]]) |\n\n## Gotchas / re-solve notes\n- Check `if stack` before `pop()`/`peek()` — empty-stack errors are the #1 bug.\n- Monotonic stack: decide **increasing vs decreasing** up front, and store **indices**\n  (you usually need the distance, not just the value).\n- Min Stack: store the running min alongside each value so `getMin` stays O(1).\n\n## Related\n- Monotonic stack also appears in [[arrays-12-advanced]] (trapping rain water, histogram)\n- Iterative tree/graph traversals use an explicit stack → [[trees]], [[graphs]]\n",
+    "related": [
+      "backtracking",
+      "arrays-12-advanced",
+      "trees",
+      "graphs"
+    ]
+  },
+  {
+    "id": "strings",
+    "title": "Strings",
+    "domain": "Coding / DSA",
+    "group": "Strings",
+    "tags": [
+      "dsa",
+      "strings",
+      "two-pointers",
+      "sliding-window"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nStrings are just **arrays of characters**, so the same patterns apply — plus a few\nstring-specific ones. Most interview string problems are one of: **frequency map**,\n**two pointers**, **sliding window**, or **expand-around-center**.\n\n> Python note: strings are **immutable** — building a result char-by-char with `+`\n> is O(n²). Collect into a `list` and `\"\".join(...)` it, which is O(n).\n\n## Pattern 1 — Frequency map (anagrams)\nTwo strings are anagrams iff their character counts match.\n```python\nfrom collections import Counter\ndef is_anagram(a, b):\n    return Counter(a) == Counter(b)          # O(n)\n\ndef group_anagrams(words):\n    groups = {}\n    for w in words:\n        key = tuple(sorted(w))               # or a 26-length count tuple\n        groups.setdefault(key, []).append(w)\n    return list(groups.values())\n```\n\n## Pattern 2 — Two pointers (palindromes)\n```python\ndef is_palindrome(s):\n    s = [c.lower() for c in s if c.isalnum()]\n    l, r = 0, len(s) - 1\n    while l < r:\n        if s[l] != s[r]:\n            return False\n        l += 1; r -= 1\n    return True\n```\n\n## Pattern 3 — Sliding window (substring constraints)\n\"Longest/shortest substring such that …\" → grow `right`, shrink `left` while invalid.\n```python\ndef longest_unique(s):\n    last = {}                      # char -> last index seen\n    left = best = 0\n    for right, c in enumerate(s):\n        if c in last and last[c] >= left:\n            left = last[c] + 1     # jump past the duplicate\n        last[c] = right\n        best = max(best, right - left + 1)\n    return best\n```\n(Minimum Window Substring, Find All Anagrams, Permutation in String are the same\nshape with a `need`/`window` count map.)\n\n## Pattern 4 — Expand around center (palindromic substrings)\nEach of the `2n-1` centers (each char, and each gap) expands outward while it stays\na palindrome. **O(n²)**, O(1) space.\n```python\ndef longest_palindrome(s):\n    res = \"\"\n    def grow(l, r):\n        while l >= 0 and r < len(s) and s[l] == s[r]:\n            l -= 1; r += 1\n        return s[l+1:r]\n    for i in range(len(s)):\n        res = max(res, grow(i, i), grow(i, i+1), key=len)  # odd & even centers\n    return res\n```\n\n## Complexity\n- Frequency / two-pointer / sliding window: **O(n)**.\n- Expand-around-center: **O(n²)** time, O(1) space (fine for typical limits).\n- Sorting-based anagram key: O(n·k log k) for k-length words.\n\n## Canonical problems (NeetCode)\n| Problem | Pattern |\n|---|---|\n| Valid Anagram · Group Anagrams | frequency map |\n| Valid Palindrome | two pointers |\n| Longest Substring Without Repeating Chars | sliding window |\n| Minimum Window Substring | sliding window + need/have counts |\n| Longest Repeating Character Replacement | window + most-frequent char |\n| Palindromic Substrings · Longest Palindromic Substring | expand around center |\n| Encode and Decode Strings | length-prefix framing |\n| Valid Parentheses | stack ([[stack]]) |\n\n## Gotchas / re-solve notes\n- Build results with a **list + `join`**, never repeated `+=` on a string.\n- Sliding-window length is `right - left + 1` (off-by-one trap).\n- For anagram keys, a **26-int count tuple** is faster than `sorted()` for long words.\n- Watch case/spaces/punctuation in palindrome problems — normalize first.\n\n## Related\n- Same engines as [[arrays-03-two-pointers]], [[arrays-04-sliding-window]], [[hashing-02-frequency-map]]\n- Substring+window deep-dive: [[hashing-06-strings-window]]\n",
+    "related": [
+      "stack",
+      "arrays-03-two-pointers",
+      "arrays-04-sliding-window",
+      "hashing-02-frequency-map",
+      "hashing-06-strings-window"
+    ]
+  },
+  {
+    "id": "trees",
+    "title": "Trees",
+    "domain": "Coding / DSA",
+    "group": "Trees",
+    "tags": [
+      "dsa",
+      "trees",
+      "bst",
+      "dfs",
+      "bfs",
+      "recursion"
+    ],
+    "status": "new",
+    "updated": "2026-06-06",
+    "body": "## When to reach for it\nTrees are the **highest-frequency** interview topic. Almost everything is one of:\n**DFS** (recursion — pre/in/post-order) or **BFS** (level-order with a queue),\nplus the **BST property** (left < node < right) for ordered lookups.\n\n```\n        1\n       / \\\n      2   3        node: { val, left, right }\n     / \\\n    4   5\n```\n```python\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n```\n\n## DFS — recursion is the whole game\nMost tree problems are \"do something with the node, then recurse on children.\"\n```python\ndef dfs(node):\n    if not node:                 # base case — empty subtree\n        return ...\n    left  = dfs(node.left)       # solve children\n    right = dfs(node.right)\n    return combine(node, left, right)   # use results\n\n# max depth\ndef max_depth(root):\n    if not root: return 0\n    return 1 + max(max_depth(root.left), max_depth(root.right))\n```\n**Traversal orders** (when you \"visit\" the node relative to children):\n```\n pre-order:  node, left, right     (copy a tree, prefix expr)\n in-order:   left, node, right     (BST -> sorted order!)\n post-order: left, right, node     (delete a tree, subtree sums, heights)\n```\n\n## BFS — level by level (queue)\n```\n level 0: [1]\n level 1: [2, 3]\n level 2: [4, 5]\n```\n```python\nfrom collections import deque\ndef level_order(root):\n    if not root: return []\n    q, out = deque([root]), []\n    while q:\n        level = []\n        for _ in range(len(q)):          # fix the level size first\n            node = q.popleft()\n            level.append(node.val)\n            if node.left:  q.append(node.left)\n            if node.right: q.append(node.right)\n        out.append(level)\n    return out\n```\n\n## Binary Search Tree (BST)\n`left subtree < node < right subtree`. Search/insert is **O(h)** (h = height;\nO(log n) if balanced). **In-order traversal of a BST yields sorted values** — the\nkey trick for \"kth smallest\", \"validate BST\", \"range sum\".\n```python\ndef search_bst(root, target):\n    while root and root.val != target:\n        root = root.left if target < root.val else root.right\n    return root\n```\n\n## Complexity\n- DFS/BFS visit each node once: **O(n)** time.\n- Space: **O(h)** for DFS recursion (call stack), **O(n)** worst for BFS queue.\n  Balanced h ≈ log n; a degenerate (linked-list-like) tree has h = n.\n\n## Canonical problems (NeetCode)\n| Problem | Idea |\n|---|---|\n| Invert Binary Tree | swap children, recurse |\n| Maximum Depth | 1 + max(children) |\n| Diameter of Binary Tree | post-order, track best left+right height |\n| Balanced Binary Tree | post-order height + balance check |\n| Same Tree / Subtree of Another Tree | parallel DFS |\n| Level Order Traversal | BFS with queue |\n| Validate BST | in-order is sorted, or pass (low, high) bounds |\n| Kth Smallest in a BST | in-order, stop at k |\n| Lowest Common Ancestor (BST) | walk down by value comparison |\n| Construct Tree from Preorder+Inorder | recursion + index map |\n\n## Gotchas / re-solve notes\n- **Always handle `if not node`** (the empty base case) first.\n- \"Validate BST\" needs **min/max bounds** passed down — checking only `left<node<right`\n  locally is a classic wrong answer.\n- BFS: snapshot `len(q)` **before** the inner loop to process exactly one level.\n- Post-order is for \"I need the children's results before deciding\" (heights, sums).\n\n## Related\n- Tries are a specialized tree → see Backtracking/Graphs neighbors\n- BFS/DFS generalize to [[graphs]]; \"kth/closest\" pairs with [[heap]]\n- Tree DP (e.g. House Robber III) connects to [[dynamic-programming]]\n",
+    "related": [
+      "graphs",
+      "heap",
+      "dynamic-programming"
     ]
   },
   {
