@@ -1,54 +1,51 @@
 # DSA — Coding Interview Roadmap
 
-The complete data-structures & algorithms track for Phase 2 & 4 (online assessments
-+ coding rounds). It mirrors the **NeetCode 150** topic order: learn the *pattern*,
-not the problem. Each topic page has the same shape — when to reach for it, the
-core idea, an ASCII diagram, a code template, complexity, canonical problems, and
-pitfalls.
+The complete data-structures & algorithms track for Phase 2 & 4. Every topic is its
+own **folder = a basics→advanced track** (a `00 roadmap` hub + numbered pages), in
+**learning order**. Each page has the same shape: when to reach for it → the idea →
+an ASCII diagram → a code template → complexity → canonical problems → pitfalls.
 
-> Pass signal: solve a Medium in 20–25 minutes, talking out loud.
+> Pass signal: solve a Medium in 20–25 minutes, talking out loud. One concept lives in
+> exactly one place — no duplicates.
 
-## Learning path
+## Learning path (study in this order)
 
-| # | Topic | Folder / page | Why it matters |
-|---|-------|---------------|----------------|
-| 1 | **Arrays & Hashing** | [arrays/](arrays/arrays-00-roadmap.md) · [hashing/](hashing/hashing-00-roadmap.md) | the foundation; most problems start here |
-| 2 | **Two Pointers** | [arrays/…two-pointers](arrays/arrays-03-two-pointers.md) | collapse nested loops on sorted data |
-| 3 | **Sliding Window** | [arrays/…sliding-window](arrays/arrays-04-sliding-window.md) | subarray / substring problems |
-| 4 | **Stack** | [stack/](stack/stack.md) | matching, monotonic stack, "next greater" |
-| 5 | **Binary Search** | [arrays/…binary-search](arrays/arrays-08-binary-search.md) | O(log n); "search on the answer" |
-| 6 | **Linked List** | [linked-list/](linked-list/linked-list.md) | pointers, fast/slow, reversal |
-| 7 | **Trees** | [trees/](trees/trees.md) | BFS/DFS, BST, recursion — huge in interviews |
-| 8 | **Heap / Priority Queue** | [heap/](heap/heap.md) | top-K, streaming, scheduling |
-| 9 | **Backtracking** | [backtracking/](backtracking/backtracking.md) | subsets, permutations, combinations |
-| 10 | **Graphs** | [graphs/](graphs/graphs.md) | BFS/DFS, topo sort, union-find, Dijkstra |
-| 11 | **Dynamic Programming** | [dynamic-programming/](dynamic-programming/dynamic-programming.md) | 1-D & 2-D DP, the recipe |
-| 12 | **Greedy** | [greedy/](greedy/greedy.md) | local choice → global optimum |
-| 13 | **Intervals** | [intervals/](intervals/intervals.md) | sort by start, merge/overlap |
-| 14 | **Strings** | [strings/](strings/strings.md) | parsing, frequency, two-pointer/window |
-| 15 | **Math & Bit Manipulation** | [math-bits/](math-bits/math-and-bits.md) | XOR tricks, bit masks, number theory |
+| # | Topic | Track | Covers |
+|---|-------|-------|--------|
+| 1 | **Arrays** | [arrays/](arrays/arrays-00-roadmap.md) | basics, traversal, two pointers, sliding window, prefix sum, Kadane, sorting, binary search, matrix, **greedy**, **1-D DP** |
+| 2 | **Hashing** | [hashing/](hashing/hashing-00-roadmap.md) | maps & sets, frequency, complement, prefix+hashmap, strings/window |
+| 3 | **Strings** | [strings/](strings/strings-00-roadmap.md) | immutability, two-pointer/window, anagrams, expand-around-center |
+| 4 | **Stack** | [stack/](stack/stack-00-roadmap.md) | matching, monotonic stack, RPN/histogram |
+| 5 | **Linked List** | [linked-list/](linked-list/linked-list-00-roadmap.md) | dummy head, reverse, fast/slow, merge, LRU |
+| 6 | **Trees** | [trees/](trees/trees-00-roadmap.md) | DFS/BFS, BST, diameter, LCA, construct, tree-DP |
+| 7 | **Heap / Priority Queue** | [heap/](heap/heap-00-roadmap.md) | top-K, two-heaps median, merge-K, scheduling |
+| 8 | **Backtracking** | [backtracking/](backtracking/backtracking-00-roadmap.md) | subsets, permutations, combinations, grid/N-Queens |
+| 9 | **Graphs** | [graphs/](graphs/graphs-00-roadmap.md) | BFS/DFS, grids, topo sort, union-find, Dijkstra |
+| 10 | **Intervals** | [intervals/](intervals/intervals-00-roadmap.md) | merge, insert, meeting rooms, non-overlapping |
+| 11 | **Math & Bits** | [math-bits/](math-bits/math-00-roadmap.md) | XOR tricks, bitmasks, gcd, primes, fast power |
+
+> **Greedy** and **Dynamic Programming** live inside the **Arrays** track
+> ([arrays-11-greedy](arrays/arrays-11-greedy.md), [arrays-13-dp](arrays/arrays-13-dp.md)),
+> alongside Two Pointers / Sliding Window / Binary Search — so they're not duplicated here.
 
 ## Pattern → reach-for-it cheatsheet
 
 | Clue in the problem | Technique |
 |---|---|
-| "seen before / count / duplicate / pair" | hashing — [hashing/](hashing/hashing-00-roadmap.md) |
-| "sorted" + "pair / triplet" | two pointers |
-| "subarray / substring / window" | sliding window |
-| "sorted" + "find / min X such that" | binary search |
-| "matching / nesting / next greater" | stack — [stack/](stack/stack.md) |
-| "all combinations / permutations / subsets" | backtracking — [backtracking/](backtracking/backtracking.md) |
-| "shortest path / connected / grid" | graph BFS/DFS — [graphs/](graphs/graphs.md) |
-| "max/min ways, overlapping subproblems" | DP — [dynamic-programming/](dynamic-programming/dynamic-programming.md) |
-| "top K / K-th largest / merge K" | heap — [heap/](heap/heap.md) |
-| "overlapping ranges / meetings" | intervals — [intervals/](intervals/intervals.md) |
+| "seen before / count / duplicate / pair" | hashing |
+| "sorted" + "pair/triplet" | two pointers (arrays-03) |
+| "subarray / substring / window" | sliding window (arrays-04) |
+| "sorted" + "find / min X such that" | binary search (arrays-08) |
+| "matching / nesting / next greater" | stack |
+| "all combinations / permutations / subsets" | backtracking |
+| "shortest path / connected / grid" | graph BFS/DFS |
+| "max/min ways, overlapping subproblems" | DP (arrays-13) |
+| "top K / K-th / merge K" | heap |
+| "overlapping ranges / meetings" | intervals |
 
 ## How to study
-1. Read the topic page → understand the **idea + template**.
-2. Solve 2 canonical problems with it.
+1. Read the topic's `00 roadmap`, then its pages in order.
+2. Solve 2 canonical problems per page.
 3. A few days later, **re-solve one from a blank screen** — that's the real learning.
 4. In the app, mark each page New → Learning → Reviewing → Mastered; the spaced-review
    queue brings it back before you forget.
-
-Folders `arrays/` and `hashing/` are full multi-page tracks; the rest are one
-comprehensive page each (expandable into tracks as you go deeper).

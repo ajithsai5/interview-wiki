@@ -57,6 +57,13 @@
   // sub-folder fall into this bucket; a domain that has ONLY this bucket renders
   // flat (no sub-headers), so single-folder domains stay clean.
   const GROUP_FALLBACK = "Core Concepts";
+  // Learning-path order for sub-groups (DSA). Unlisted groups fall back to
+  // alphabetical; the catch-all bucket always sorts last.
+  const GROUP_ORDER = {
+    "Arrays": 1, "Hashing": 2, "Strings": 3, "Stack": 4, "Linked List": 5,
+    "Trees": 6, "Heap": 7, "Backtracking": 8, "Graphs": 9, "Intervals": 10,
+    "Math & Bits": 11,
+  };
   function groupOf(n) { return (n.group && n.group.trim()) ? n.group : GROUP_FALLBACK; }
   function orderedGroups(items) {
     const names = [];
@@ -64,7 +71,8 @@
     names.sort((a, b) => {
       if (a === GROUP_FALLBACK) return 1;     // keep the catch-all last
       if (b === GROUP_FALLBACK) return -1;
-      return a.localeCompare(b);
+      const oa = GROUP_ORDER[a] || 99, ob = GROUP_ORDER[b] || 99;
+      return (oa - ob) || a.localeCompare(b);
     });
     return names;
   }

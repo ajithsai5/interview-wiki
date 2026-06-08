@@ -120,4 +120,4 @@ def min_subarray_len(target, arr):
 
 ## Related
 - Builds on [[arrays-03-two-pointers]] · negatives? often need [[arrays-05-prefix-sum]]
-- Seeded deep-dive: [[sliding-window]] · windowed *max*: [[arrays-12-advanced]]
+- Seeded deep-dive: [[arrays-04-sliding-window]] · windowed *max*: [[arrays-12-advanced]]

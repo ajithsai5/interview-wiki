@@ -125,5 +125,5 @@ def search_rotated(arr, target):
 - Returning the wrong boundary — be clear whether you want first-true or last-false.
 
 ## Related
-- Needs [[arrays-07-sorting]] first · seeded deep-dive: [[binary-search]]
+- Needs [[arrays-07-sorting]] first · seeded deep-dive: [[arrays-08-binary-search]]
 - Next: [[arrays-09-hashing]]

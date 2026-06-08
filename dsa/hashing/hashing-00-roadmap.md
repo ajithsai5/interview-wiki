@@ -54,4 +54,4 @@ how an O(n²) brute force collapses to O(n).
 
 ## Related tracks
 - [[arrays-00-roadmap]] — the Arrays roadmap (hashing powers many array problems)
-- Seeded deep-dives: [[hashing]] · [[big-o]]
+- Seeded deep-dives: [[hashing-00-roadmap]] · [[arrays-01-basics]]

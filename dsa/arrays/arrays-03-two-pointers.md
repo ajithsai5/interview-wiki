@@ -111,5 +111,5 @@ def max_area(h):
 - Loop condition is `l < r` (not `<=`) when the two must be different elements.
 
 ## Related
-- Compare with the seeded [[two-pointers]] note · brute-force baseline in [[arrays-02-traversal]]
+- Compare with the seeded [[arrays-03-two-pointers]] note · brute-force baseline in [[arrays-02-traversal]]
 - Next: [[arrays-04-sliding-window]] — two pointers that bound a *window*

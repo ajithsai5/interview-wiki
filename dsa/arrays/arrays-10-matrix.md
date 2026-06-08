@@ -127,5 +127,5 @@ def num_islands(grid):
 - Don't forget to **mark visited**, or grid DFS recurses forever.
 
 ## Related
-- Grid DFS/BFS connect to graphs (seeded [[graphs]]) · backtracking in [[arrays-12-advanced]]
+- Grid DFS/BFS connect to graphs (seeded [[graphs-00-roadmap]]) · backtracking in [[arrays-12-advanced]]
 - Next: [[arrays-11-greedy]]

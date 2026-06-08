@@ -109,4 +109,4 @@ present = set(arr)                    # {1, 2, 3}
 
 ## Related
 - Next: [[hashing-02-frequency-map]] · the whole map: [[hashing-00-roadmap]]
-- Seeded deep-dive: [[hashing]] · complexity: [[big-o]]
+- Seeded deep-dive: [[hashing-00-roadmap]] · complexity: [[arrays-01-basics]]

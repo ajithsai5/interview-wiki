@@ -96,4 +96,4 @@ so you understand what the built-ins hide.
 
 ## Related
 - Next: [[arrays-02-traversal]] — looping patterns you'll reuse everywhere
-- Big-picture: [[arrays-00-roadmap]] · the seeded [[big-o]] page for complexity depth
+- Big-picture: [[arrays-00-roadmap]] · the seeded [[arrays-01-basics]] page for complexity depth

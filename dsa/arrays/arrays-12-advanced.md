@@ -127,5 +127,5 @@ compute the area each popped bar can span. O(n).
 - Difference array needs the `n+1` slot for the `r+1` decrement.
 
 ## Related
-- Builds on [[arrays-04-sliding-window]], [[arrays-05-prefix-sum]] · heap basics: seeded [[heaps]]
+- Builds on [[arrays-04-sliding-window]], [[arrays-05-prefix-sum]] · heap basics: seeded [[heap-00-roadmap]]
 - Next: [[arrays-13-dp]]
