@@ -6,18 +6,13 @@ group: Heap
 status: new
 anki: false
 created: 2026-06-06
-updated: 2026-06-06
+updated: 2026-06-10
 ---
 
 ## The size-K heap (the counter-intuitive trick)
 For **K largest**, keep a **min-heap of size K**. The smallest of your K best sits at
 the root, so a new element only earns a spot if it beats that root. You hold just K
 items → **O(n log k)** time, **O(k)** space.
-```
- K=3, stream 5,1,7,3,9 :
- heap keeps the 3 largest seen; root = smallest of the 3
- -> after all: {7,9,5}  (root 5)   -> answers 9,7,5
-```
 ```python
 import heapq
 def k_largest(nums, k):
@@ -29,6 +24,17 @@ def k_largest(nums, k):
     return h                     # the k largest (unordered)
 ```
 (Symmetric: for **K smallest**, keep a **max-heap** of size K via negation.)
+
+## Dry run — K=3 over the stream 5, 1, 7, 3, 9
+```
+ x=5: push -> [5]
+ x=1: push -> [1,5]
+ x=7: push -> [1,5,7]                 size 3, ok
+ x=3: push -> [1,3,7,5]; size 4 -> pop min 1 -> [3,5,7]   (3 kicked 1's slot? no—evicts 1)
+ x=9: push -> [3,5,7,9]; size 4 -> pop min 3 -> [5,7,9]
+ result: {5,7,9} = the three largest. root 5 = the 3rd largest.
+```
+Each element pays at most O(log k); the heap never grows past K.
 
 ## K-th largest
 The root of a size-K min-heap is exactly the K-th largest.
@@ -58,17 +64,28 @@ def top_k_frequent(nums, k):
 ```
 
 ## Heap vs Quickselect
-- **Heap**: O(n log k), simple, great for **streaming** (data arrives over time).
+- **Heap**: O(n log k), simple, great for **streaming** (data arrives over time) and when
+  k ≪ n.
 - **Quickselect**: O(n) average to find the K-th, but needs the full array in memory and
   has O(n²) worst case. Use heap when in doubt or when data streams.
+- **Bucket sort**: when values are counts bounded by n (e.g. "top K frequent"), bucket by
+  frequency for **O(n)** with no heap at all.
 
 ## Canonical problems
-| Problem | Heap |
+| Problem | Approach |
 |---|---|
-| Kth Largest Element in an Array | size-K min-heap |
-| K Closest Points to Origin | size-K max-heap by distance |
-| Top K Frequent Elements | count + nlargest (or bucket sort) |
-| Kth Largest in a Stream | persistent size-K heap |
+| Kth Largest Element in an Array | size-K min-heap (or quickselect) |
+| K Closest Points to Origin | size-K max-heap by squared distance |
+| Top K Frequent Elements | Counter + nlargest, or O(n) bucket sort |
+| Kth Largest in a Stream | persistent size-K min-heap, peek root |
+| Sort Characters by Frequency | Counter + max-heap (or bucket) |
+
+## Variations & follow-ups
+- "Kth Largest in a **Stream**" (design a class) → keep the size-K heap as state; each
+  `add` is O(log k) and returns `h[0]`.
+- "K most frequent **words**" with ties broken alphabetically → push `(count, word)` with
+  a custom comparison so equal counts order by word.
+- If k is close to n, just **sort** — the size-K heap's advantage is when k ≪ n.
 
 ## Gotchas
 - **K largest → min-heap of size K** (and K smallest → max-heap). Easy to flip by mistake.

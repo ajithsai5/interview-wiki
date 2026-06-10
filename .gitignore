@@ -7,6 +7,9 @@
 Thumbs.db
 desktop.ini
 
+# Local Claude Code tooling (machine-specific paths, e.g. preview launch config)
+.claude/
+
 # Self-hosted sync secrets (DB credentials + sync key) — never commit
 server/config.php
 

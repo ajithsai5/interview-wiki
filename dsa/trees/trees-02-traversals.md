@@ -6,7 +6,7 @@ group: Trees
 status: new
 anki: false
 created: 2026-06-06
-updated: 2026-06-06
+updated: 2026-06-10
 ---
 
 ## DFS — three orders (when you "visit" vs recurse)
@@ -16,19 +16,33 @@ updated: 2026-06-06
       2   3
      / \
     4   5
- pre-order  (node,left,right): 1 2 4 5 3     -> copy tree, prefix expr
- in-order   (left,node,right): 4 2 5 1 3     -> BST gives SORTED order
- post-order (left,right,node): 4 5 2 3 1     -> heights, subtree sums, delete
+ pre-order  (node,left,right): 1 2 4 5 3     -> copy a tree, prefix expression
+ in-order   (left,node,right): 4 2 5 1 3     -> a BST yields SORTED order
+ post-order (left,right,node): 4 5 2 3 1     -> heights, subtree sums, deletion
 ```
 ```python
+def preorder(root, out):
+    if not root: return
+    out.append(root.val)        # visit BEFORE children
+    preorder(root.left, out)
+    preorder(root.right, out)
+
 def inorder(root, out):
     if not root: return
     inorder(root.left, out)
-    out.append(root.val)        # visit between children
+    out.append(root.val)        # visit BETWEEN children
     inorder(root.right, out)
+
+def postorder(root, out):
+    if not root: return
+    postorder(root.left, out)
+    postorder(root.right, out)
+    out.append(root.val)        # visit AFTER children
 ```
-- **post-order** when you need children's results *before* deciding the node (heights, "is balanced", subtree sums).
+- **post-order** when you need children's results *before* deciding the node
+  (heights, "is balanced", subtree sums, deleting).
 - **in-order** for BSTs (yields sorted values).
+- **pre-order** to serialize / copy top-down.
 
 ## BFS — level by level (queue)
 ```
@@ -51,6 +65,8 @@ def level_order(root):
         out.append(level)
     return out
 ```
+The `for _ in range(len(q))` is the trick that processes **exactly one level** per
+outer iteration.
 
 ## Iterative DFS (avoid recursion-depth limits)
 ```python
@@ -59,26 +75,33 @@ def preorder_iter(root):
     while stack:
         node = stack.pop()
         res.append(node.val)
-        if node.right: stack.append(node.right)   # push right first
-        if node.left:  stack.append(node.left)    # so left is processed first
+        if node.right: stack.append(node.right)   # push right first...
+        if node.left:  stack.append(node.left)    # ...so left comes off first
     return res
 ```
 
 ## Complexity
-All traversals: **O(n)** time. Space: DFS O(h) recursion stack; BFS O(n) queue (worst).
+All traversals: **O(n)** time. Space: DFS O(h) recursion stack; BFS O(n) queue (a full
+bottom level can hold ~n/2 nodes).
 
 ## Canonical problems
-| Problem | Order |
-|---|---|
-| Binary Tree Inorder/Preorder/Postorder | DFS |
-| Level Order Traversal / Zigzag | BFS |
-| Right Side View | BFS (last per level) |
-| Maximum Depth / Min Depth | DFS or BFS |
-| Binary Tree Paths | DFS carrying the path |
+| Problem | Order / tool | Approach |
+|---|---|---|
+| Inorder / Preorder / Postorder | DFS | recursion or explicit stack |
+| Level Order / Zigzag | BFS | per-level loop; reverse alternate levels |
+| Right Side View | BFS | last node of each level |
+| Average of Levels | BFS | sum/count per level |
+| Maximum / Minimum Depth | DFS or BFS | BFS min-depth stops at first leaf |
+| Binary Tree Paths | DFS | carry the path, record at leaves |
+
+## Variations & follow-ups
+- "Vertical order traversal" → BFS carrying a column index, bucket by column.
+- "Boundary of binary tree" → left edge + leaves + reversed right edge.
+- Morris traversal does in-order in **O(1) space** (advanced; threads the tree).
 
 ## Gotchas
-- BFS: **snapshot `len(q)`** before the inner loop to process exactly one level.
-- Iterative pre-order: push **right before left** so left comes off first.
+- BFS: **snapshot `len(q)`** before the inner loop, or you mix levels together.
+- Iterative pre-order: push **right before left** so left is processed first.
 - Pick the order by *when you need the node's data* relative to its children.
 
 ## Next
